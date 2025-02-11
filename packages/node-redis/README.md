@@ -23,9 +23,9 @@
     <br />
     <a href="/sample">View Demos</a>
     ·
-    <a href="https://github.com/liaoliaots/nestjs-redis/issues/new/choose">Report Bug</a>
+    <a href="https://github.com/nestjs-labs/nestjs-redis/issues/new/choose">Report Bug</a>
     ·
-    <a href="https://github.com/liaoliaots/nestjs-redis/issues">Request Feature</a>
+    <a href="https://github.com/nestjs-labs/nestjs-redis/issues">Request Feature</a>
   </p>
 </div>
 
@@ -82,11 +82,11 @@ This lib requires **Node.js >=16.13.0**, **NestJS ^10.0.0**, **node-redis ^4.0.0
 
 ```sh
 # with npm
-npm install @liaoliaots/nestjs-redis ioredis
+npm install @nestjs-labs/nestjs-redis ioredis
 # with yarn
-yarn add @liaoliaots/nestjs-redis ioredis
+yarn add @nestjs-labs/nestjs-redis ioredis
 # with pnpm
-pnpm add @liaoliaots/nestjs-redis ioredis
+pnpm add @nestjs-labs/nestjs-redis ioredis
 ```
 
 ## Usage
@@ -149,7 +149,7 @@ Examples of code:
 ```ts
 // redis-config.service.ts
 import { Injectable } from '@nestjs/common';
-import { RedisModuleOptions, RedisOptionsFactory } from '@liaoliaots/nestjs-redis';
+import { RedisModuleOptions, RedisOptionsFactory } from '@nestjs-labs/nestjs-redis';
 
 @Injectable()
 export class RedisConfigService implements RedisOptionsFactory {
@@ -171,7 +171,7 @@ export class RedisConfigService implements RedisOptionsFactory {
 ```ts
 // app.module.ts
 import { Module } from '@nestjs/common';
-import { RedisModule } from '@liaoliaots/nestjs-redis';
+import { RedisModule } from '@nestjs-labs/nestjs-redis';
 import { RedisConfigService } from './redis-config.service';
 
 @Module({
@@ -189,7 +189,7 @@ export class AppModule {}
 ```ts
 // my-redis.module.ts
 import { Module } from '@nestjs/common';
-import { RedisModule } from '@liaoliaots/nestjs-redis';
+import { RedisModule } from '@nestjs-labs/nestjs-redis';
 import { RedisConfigService } from './redis-config.service';
 
 @Module({
@@ -245,16 +245,16 @@ Distributed under the MIT License. See `LICENSE` for more information.
 - [Official Redis Docker Image](https://hub.docker.com/_/redis)
 - [Official Bitnami Redis Docker Image](https://hub.docker.com/r/bitnami/redis)
 
-[npm-shield]: https://img.shields.io/npm/v/@liaoliaots/nestjs-redis/latest?style=for-the-badge
-[npm-url]: https://www.npmjs.com/package/@liaoliaots/nestjs-redis
-[downloads-shield]: https://img.shields.io/npm/dm/@liaoliaots/nestjs-redis?style=for-the-badge
-[downloads-url]: https://www.npmjs.com/package/@liaoliaots/nestjs-redis
-[stars-shield]: https://img.shields.io/github/stars/liaoliaots/nestjs-redis?style=for-the-badge
-[stars-url]: https://github.com/liaoliaots/nestjs-redis/stargazers
-[issues-shield]: https://img.shields.io/github/issues/liaoliaots/nestjs-redis?style=for-the-badge
-[issues-url]: https://github.com/liaoliaots/nestjs-redis/issues
-[license-shield]: https://img.shields.io/npm/l/@liaoliaots/nestjs-redis?style=for-the-badge
-[license-url]: https://github.com/liaoliaots/nestjs-redis/blob/main/LICENSE
-[vulnerabilities-shield]: https://img.shields.io/snyk/vulnerabilities/npm/@liaoliaots/nestjs-redis?style=for-the-badge
-[workflow-shield]: https://img.shields.io/github/actions/workflow/status/liaoliaots/nestjs-redis/testing.yaml?label=TESTING&style=for-the-badge
-[workflow-url]: https://github.com/liaoliaots/nestjs-redis/actions/workflows/testing.yaml
+[npm-shield]: https://img.shields.io/npm/v/@nestjs-labs/nestjs-redis/latest?style=for-the-badge
+[npm-url]: https://www.npmjs.com/package/@nestjs-labs/nestjs-redis
+[downloads-shield]: https://img.shields.io/npm/dm/@nestjs-labs/nestjs-redis?style=for-the-badge
+[downloads-url]: https://www.npmjs.com/package/@nestjs-labs/nestjs-redis
+[stars-shield]: https://img.shields.io/github/stars/nestjs-labs/nestjs-redis?style=for-the-badge
+[stars-url]: https://github.com/nestjs-labs/nestjs-redis/stargazers
+[issues-shield]: https://img.shields.io/github/issues/nestjs-labs/nestjs-redis?style=for-the-badge
+[issues-url]: https://github.com/nestjs-labs/nestjs-redis/issues
+[license-shield]: https://img.shields.io/npm/l/@nestjs-labs/nestjs-redis?style=for-the-badge
+[license-url]: https://github.com/nestjs-labs/nestjs-redis/blob/main/LICENSE
+[vulnerabilities-shield]: https://img.shields.io/snyk/vulnerabilities/npm/@nestjs-labs/nestjs-redis?style=for-the-badge
+[workflow-shield]: https://img.shields.io/github/actions/workflow/status/nestjs-labs/nestjs-redis/testing.yaml?label=TESTING&style=for-the-badge
+[workflow-url]: https://github.com/nestjs-labs/nestjs-redis/actions/workflows/testing.yaml

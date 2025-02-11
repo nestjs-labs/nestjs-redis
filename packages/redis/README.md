@@ -1,4 +1,4 @@
-![NPM Version](https://img.shields.io/npm/v/%40liaoliaots%2Fnestjs-redis%2Falpha?style=for-the-badge)
+![NPM Version](https://img.shields.io/npm/v/%40nestjs-redis%2Fnestjs-redis%2Falpha?style=for-the-badge)
 [![Downloads][downloads-shield]][downloads-url]
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
@@ -21,9 +21,9 @@
     <br />
     <a href="/sample">View Demos</a>
     ·
-    <a href="https://github.com/liaoliaots/nestjs-redis/issues/new/choose">Report Bug</a>
+    <a href="https://github.com/nestjs-labs/nestjs-redis/issues/new/choose">Report Bug</a>
     ·
-    <a href="https://github.com/liaoliaots/nestjs-redis/issues">Request Feature</a>
+    <a href="https://github.com/nestjs-labs/nestjs-redis/issues">Request Feature</a>
   </p>
 </div>
 
@@ -76,18 +76,18 @@ This lib requires **Node.js >=16.13.0**, **NestJS ^10.0.0** | **NestJS ^11.0.0**
 
 - If you depend on **ioredis 5** & **NestJS 10**, please use version **10** of the lib.
 - If you depend on **ioredis 5** & **NestJS 9**, please use version **9** of the lib.
-- If you depend on **ioredis 5**, **NestJS 7** or **8**, please use [version 8](https://github.com/liaoliaots/nestjs-redis/tree/v8.2.2) of the lib.
-- If you depend on **ioredis 4**, please use [version 7](https://github.com/liaoliaots/nestjs-redis/tree/v7.0.0) of the lib.
+- If you depend on **ioredis 5**, **NestJS 7** or **8**, please use [version 8](https://github.com/nestjs-labs/nestjs-redis/tree/v8.2.2) of the lib.
+- If you depend on **ioredis 4**, please use [version 7](https://github.com/nestjs-labs/nestjs-redis/tree/v7.0.0) of the lib.
 
 ### Installation
 
 ```sh
 # with npm
-npm install @liaoliaots/nestjs-redis ioredis
+npm install @nestjs-labs/nestjs-redis ioredis
 # with yarn
-yarn add @liaoliaots/nestjs-redis ioredis
+yarn add @nestjs-labs/nestjs-redis ioredis
 # with pnpm
-pnpm add @liaoliaots/nestjs-redis ioredis
+pnpm add @nestjs-labs/nestjs-redis ioredis
 ```
 
 ## Usage
@@ -150,11 +150,11 @@ Distributed under the MIT License. See `LICENSE` for more information.
 - [Official Redis Documentation](https://redis.io/)
 - [Official Redis Docker Image](https://hub.docker.com/_/redis)
 
-[downloads-shield]: https://img.shields.io/npm/dm/@liaoliaots/nestjs-redis?style=for-the-badge
-[downloads-url]: https://www.npmjs.com/package/@liaoliaots/nestjs-redis
-[stars-shield]: https://img.shields.io/github/stars/liaoliaots/nestjs-redis?style=for-the-badge
-[stars-url]: https://github.com/liaoliaots/nestjs-redis/stargazers
-[issues-shield]: https://img.shields.io/github/issues/liaoliaots/nestjs-redis?style=for-the-badge
-[issues-url]: https://github.com/liaoliaots/nestjs-redis/issues
-[license-shield]: https://img.shields.io/npm/l/@liaoliaots/nestjs-redis?style=for-the-badge
-[license-url]: https://github.com/liaoliaots/nestjs-redis/blob/main/LICENSE
+[downloads-shield]: https://img.shields.io/npm/dm/@nestjs-labs/nestjs-redis?style=for-the-badge
+[downloads-url]: https://www.npmjs.com/package/@nestjs-labs/nestjs-redis
+[stars-shield]: https://img.shields.io/github/stars/nestjs-labs/nestjs-redis?style=for-the-badge
+[stars-url]: https://github.com/nestjs-labs/nestjs-redis/stargazers
+[issues-shield]: https://img.shields.io/github/issues/nestjs-labs/nestjs-redis?style=for-the-badge
+[issues-url]: https://github.com/nestjs-labs/nestjs-redis/issues
+[license-shield]: https://img.shields.io/npm/l/@nestjs-labs/nestjs-redis?style=for-the-badge
+[license-url]: https://github.com/nestjs-labs/nestjs-redis/blob/main/LICENSE

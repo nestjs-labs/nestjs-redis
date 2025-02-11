@@ -1,5 +1,5 @@
 {
-  "name": "@liaoliaots/nestjs-redis-health",
+  "name": "@nestjs-labs/nestjs-redis-health",
   "version": "10.0.0",
   "description": "Redis(ioredis) health checks module for Nest framework (node.js).",
   "author": "LiaoLiao <yxiaosong002@gmail.com>",
@@ -43,7 +43,7 @@
     "tslib": "2.8.1"
   },
   "devDependencies": {
-    "@liaoliaots/nestjs-redis": "workspace:*"
+    "@nestjs-labs/nestjs-redis": "workspace:*"
   },
   "peerDependencies": {
     "@nestjs/common": "^10.0.0",
@@ -66,12 +66,12 @@
   "publishConfig": {
     "access": "public"
   },
-  "homepage": "https://github.com/liaoliaots/nestjs-redis#readme",
+  "homepage": "https://github.com/nestjs-labs/nestjs-redis#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/liaoliaots/nestjs-redis.git"
+    "url": "git+https://github.com/nestjs-labs/nestjs-redis.git"
   },
   "bugs": {
-    "url": "https://github.com/liaoliaots/nestjs-redis/issues"
+    "url": "https://github.com/nestjs-labs/nestjs-redis/issues"
   }
 }
