@@ -87,11 +87,11 @@ If you prefre [node-redis](https://github.com/redis/node-redis), check out [this
 
 ```sh
 # with npm
-npm install @nestjs-labs/nestjs-redis ioredis
+npm install @nestjs-labs/nestjs-redis redis
 # with yarn
-yarn add @nestjs-labs/nestjs-redis ioredis
+yarn add @nestjs-labs/nestjs-redis redis
 # with pnpm
-pnpm add @nestjs-labs/nestjs-redis ioredis
+pnpm add @nestjs-labs/nestjs-redis redis
 ```
 
 ## Usage

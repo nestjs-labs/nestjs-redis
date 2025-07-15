@@ -11,8 +11,8 @@ export default tseslint.config(
     ignores: ['packages/global.d.ts', '**/dist/', '**/*.mjs']
   },
   eslint.configs.recommended,
-  tseslint.configs.recommendedTypeChecked,
-  tseslint.configs.stylisticTypeChecked,
+  ...tseslint.configs.recommendedTypeChecked,
+  ...tseslint.configs.stylisticTypeChecked,
   {
     files: jestFiles,
     ...jest.configs['flat/recommended'],
