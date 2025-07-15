@@ -37,7 +37,7 @@ export const createAsyncOptionsProvider = (options: RedisModuleAsyncOptions): Pr
     return {
       provide: MODULE_OPTIONS_TOKEN,
       useFactory: options.useFactory,
-      inject: options.inject || []
+      inject: options.inject ?? []
     };
   }
 
@@ -50,8 +50,9 @@ export const createAsyncOptionsProvider = (options: RedisModuleAsyncOptions): Pr
 
   return {
     provide: MODULE_OPTIONS_TOKEN,
-    useFactory: async (optionsFactory: RedisOptionsFactory<RedisModuleOptions>) =>
-      optionsFactory.createRedisOptions(),
-    inject,
+    useFactory: async (optionsFactory: RedisOptionsFactory<RedisModuleOptions>) => {
+      return await optionsFactory.createRedisOptions();
+    },
+    inject
   };
 };
