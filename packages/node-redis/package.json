@@ -56,7 +56,8 @@
   "homepage": "https://github.com/nestjs-labs/nestjs-redis#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nestjs-labs/nestjs-redis.git"
+    "url": "git+https://github.com/nestjs-labs/nestjs-redis.git",
+    "directory": "packages/node-redis"
   },
   "bugs": {
     "url": "https://github.com/nestjs-labs/nestjs-redis/issues"
