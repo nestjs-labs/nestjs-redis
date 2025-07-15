@@ -27,7 +27,14 @@ export default tseslint.config(
       globals: globals.jest
     }
   },
-  eslintPluginPrettierRecommended,
+  {
+    ...eslintPluginPrettierRecommended,
+    rules: {
+      'prettier/prettier': 'off',
+      'arrow-parens': ['error', 'always'],
+      '@typescript-eslint/no-base-to-string': 'off'
+    }
+  },
   {
     linterOptions: {
       reportUnusedDisableDirectives: 'error'

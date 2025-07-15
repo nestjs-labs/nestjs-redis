@@ -1,4 +1,4 @@
-import { RedisClientOptions, RedisModules, RedisFunctions, RedisScripts } from 'redis';
+import { RedisClientOptions, RedisModules, RedisFunctions, RedisScripts, RedisClusterOptions } from 'redis';
 
 /**
  * Interface defining Redis options.
@@ -15,4 +15,9 @@ export interface RedisOptions<
    * See [`redis`](https://www.iana.org/assignments/uri-schemes/prov/redis) and [`rediss`](https://www.iana.org/assignments/uri-schemes/prov/rediss) IANA registration for more details
    */
   url?: string;
+
+  /**
+   * Redis cluster configuration
+   */
+  cluster?: RedisClusterOptions;
 }

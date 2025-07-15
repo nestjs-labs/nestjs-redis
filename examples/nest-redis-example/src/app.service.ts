@@ -16,7 +16,7 @@ export class AppService {
     const info = await redis.info();
     return {
       message: 'Redis connection successful',
-      serverInfo: info.split('\r\n').slice(0, 10), // 只返回前10行信息
+      serverInfo: info,
     };
   }
 

@@ -1,5 +1,5 @@
 import { Provider, Type } from '@nestjs/common';
-import { createClient, RedisClientType } from 'redis';
+import { createClient, createCluster, RedisClientType, RedisClusterType } from 'redis';
 import { REDIS_CLIENT } from './redis.constants';
 import { RedisOptions } from './interfaces';
 import { MODULE_OPTIONS_TOKEN } from './redis.module-definition';
@@ -8,7 +8,13 @@ import { RedisOptionsFactory } from './interfaces/redis-factory.interface';
 
 export const createRedisClient = (): Provider => ({
   provide: REDIS_CLIENT,
-  useFactory: async (options: RedisOptions): Promise<RedisClientType> => {
+  useFactory: async (options: RedisOptions): Promise<RedisClientType | RedisClusterType> => {
+    if (options.cluster) {
+      const cluster = createCluster(options.cluster);
+      await cluster.connect();
+      return cluster as unknown as RedisClusterType;
+    }
+
     const client = createClient(options) as RedisClientType;
     await client.connect();
     return client;

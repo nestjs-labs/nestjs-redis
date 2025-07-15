@@ -10,7 +10,14 @@ describe('RedisService', () => {
     module = await Test.createTestingModule({
       imports: [
         RedisModule.forRoot({
-          url: 'redis://localhost:6379'
+          cluster: {
+            rootNodes: [
+              {
+                url: 'redis://127.0.0.1:7380',
+                password: 'mycluster'
+              }
+            ]
+          }
         })
       ]
     }).compile();
@@ -36,9 +43,10 @@ describe('RedisService', () => {
     try {
       const result = await client.ping();
       expect(result).toBe('PONG');
-    } catch (error: unknown) {
-      // If Redis is not available, skip the test
-      console.log('Redis not available, skipping connection test');
+    } catch (error) {
+      console.log(`Redis not available, skipping connection test: ${String(error)}`);
+      // Skip test if Redis is not available
+      return;
     }
   });
 
@@ -62,8 +70,8 @@ describe('RedisService', () => {
       // Verify deletion
       const afterDelete = await client.get(testKey);
       expect(afterDelete).toBeNull();
-    } catch (error: unknown) {
-      console.log('Redis operations failed, skipping test:', (error as Error).message);
+    } catch (error) {
+      console.log(`Redis operations failed, skipping test: ${String(error)}`);
     }
   });
 
@@ -86,7 +94,7 @@ describe('RedisService', () => {
       // Cleanup
       await client.del(counterKey);
     } catch (error: unknown) {
-      console.log('Redis counter operations failed, skipping test:', (error as Error).message);
+      console.log(`Redis counter operations failed, skipping test: ${String(error)}`);
     }
   });
 
@@ -103,13 +111,13 @@ describe('RedisService', () => {
       expect(immediate).toBe('expiry-test');
 
       // Wait for expiry
-      await new Promise(resolve => setTimeout(resolve, 1100));
+      await new Promise((resolve) => setTimeout(resolve, 1100));
 
       // Should not exist after expiry
       const afterExpiry = await client.get(expiryKey);
       expect(afterExpiry).toBeNull();
     } catch (error: unknown) {
-      console.log('Redis expiry operations failed, skipping test:', (error as Error).message);
+      console.log(`Redis expiry operations failed, skipping test: ${String(error)}`);
     }
   });
 
@@ -134,7 +142,7 @@ describe('RedisService', () => {
       // Cleanup
       await client.del(listKey);
     } catch (error: unknown) {
-      console.log('Redis list operations failed, skipping test:', (error as Error).message);
+      console.log(`Redis list operations failed, skipping test: ${String(error)}`);
     }
   });
 
@@ -161,7 +169,7 @@ describe('RedisService', () => {
       // Cleanup
       await client.del(hashKey);
     } catch (error: unknown) {
-      console.log('Redis hash operations failed, skipping test:', (error as Error).message);
+      console.log(`Redis hash operations failed, skipping test: ${String(error)}`);
     }
   });
 
@@ -176,9 +184,10 @@ describe('RedisService', () => {
 
       // Cleanup
       await client.del('test:error:key');
-    } catch (error: unknown) {
-      // If Redis is not available, test should not fail
-      console.log('Redis connection test failed, but this is expected if Redis is not running');
+    } catch (error) {
+      console.log(`Redis connection test failed, but this is expected if Redis is not running: ${String(error)}`);
+      // Skip test if Redis is not available
+      return;
     }
   });
 
