@@ -4,6 +4,9 @@ export { RedisModule } from './redis.module';
 // Redis Service
 export { RedisService } from './redis.service';
 
+// Redis Providers
+export { InjectRedis } from './redis.providers';
+
 // Types and Interfaces
 export type { RedisClientType, RedisClusterType, RedisClusterOptions } from 'redis';
 export type { RedisOptions } from './interfaces/redis-options.interface';

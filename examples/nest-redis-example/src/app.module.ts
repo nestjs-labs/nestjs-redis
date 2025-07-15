@@ -35,6 +35,7 @@ import { AppService } from './app.service';
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const _url: string = configService.get('REDIS_URL')!;
         return {
+          isGlobal: true,
           cluster: {
             rootNodes: [
               {

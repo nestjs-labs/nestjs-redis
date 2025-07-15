@@ -4,6 +4,7 @@ import { RedisModuleOptions, RedisModuleAsyncOptions } from './interfaces';
 import { ConfigurableModuleClass } from './redis.module-definition';
 import { createRedisClient, createAsyncProviders } from './redis.providers';
 import { RedisService } from './redis.service';
+import { REDIS_CLIENT } from './redis.constants';
 
 @Module({})
 export class RedisModule extends ConfigurableModuleClass {
@@ -13,7 +14,7 @@ export class RedisModule extends ConfigurableModuleClass {
       global: options?.isGlobal,
       ...moduleDefinition,
       providers: [...(moduleDefinition.providers ?? []), createRedisClient(), RedisService],
-      exports: [RedisService]
+      exports: [RedisService, REDIS_CLIENT]
     };
   }
 
@@ -30,7 +31,7 @@ export class RedisModule extends ConfigurableModuleClass {
         ...(options.extraProviders ?? [])
       ],
       imports: [...(moduleDefinition.imports ?? []), ...(options.extraImports ?? [])],
-      exports: [RedisService]
+      exports: [RedisService, REDIS_CLIENT]
     };
   }
 }

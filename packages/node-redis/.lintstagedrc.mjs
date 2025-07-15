@@ -1,3 +1,3 @@
 export default {
-  '*.ts': ['prettier --write', 'eslint', () => 'tsc --project tsconfig.build.json --noEmit']
+  '*.ts': ['prettier --write', 'eslint --fix', () => 'tsc --project tsconfig.build.json --noEmit']
 };

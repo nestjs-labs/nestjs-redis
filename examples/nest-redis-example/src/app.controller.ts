@@ -1,9 +1,20 @@
 import { Body, Controller, Delete, Get, Post, Query } from '@nestjs/common';
+import { InjectRedis } from '@nestjs-labs/nestjs-redis';
+import { RedisClientType } from 'redis';
+
 import { AppService } from './app.service';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(
+    private readonly appService: AppService,
+    @InjectRedis() private readonly redis: RedisClientType,
+  ) {}
+
+  @Get('redis-get')
+  async getRedis() {
+    return await this.redis.get('test');
+  }
 
   @Get('hello')
   async getHello() {

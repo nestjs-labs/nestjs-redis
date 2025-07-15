@@ -1,4 +1,4 @@
-import { Provider, Type } from '@nestjs/common';
+import { Inject, Provider, Type } from '@nestjs/common';
 import { createClient, createCluster, RedisClientType, RedisClusterType } from 'redis';
 import { REDIS_CLIENT } from './redis.constants';
 import { RedisOptions } from './interfaces';
@@ -6,6 +6,16 @@ import { MODULE_OPTIONS_TOKEN } from './redis.module-definition';
 import { RedisModuleAsyncOptions, RedisModuleOptions } from './interfaces';
 import { RedisOptionsFactory } from './interfaces/redis-factory.interface';
 
+/**
+ * Inject the Redis client.
+ * @returns The Redis client.
+ */
+export const InjectRedis = () => Inject(REDIS_CLIENT);
+
+/**
+ * Create a Redis client.
+ * @returns The Redis client.
+ */
 export const createRedisClient = (): Provider => ({
   provide: REDIS_CLIENT,
   useFactory: async (options: RedisOptions): Promise<RedisClientType | RedisClusterType> => {

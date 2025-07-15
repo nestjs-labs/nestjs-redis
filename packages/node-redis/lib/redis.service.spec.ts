@@ -13,9 +13,9 @@ describe('RedisService', () => {
           cluster: {
             rootNodes: [
               {
-                url: 'redis://127.0.0.1:16379',
-              },
-            ],
+                url: 'redis://127.0.0.1:16379'
+              }
+            ]
           }
         })
       ]
@@ -35,6 +35,22 @@ describe('RedisService', () => {
   it('should get client', () => {
     const client = redisService.getClient();
     expect(client).toBeDefined();
+  });
+
+  it('should check if connected', () => {
+    const connected = redisService.isConnected();
+    expect(typeof connected).toBe('boolean');
+  });
+
+  it('should get client type', () => {
+    const type = redisService.getClientType();
+    expect(['single', 'cluster']).toContain(type);
+  });
+
+  it('should perform health check', async () => {
+    const health = await redisService.healthCheck();
+    expect(health).toHaveProperty('status');
+    expect(['up', 'down']).toContain(health.status);
   });
 
   it('should connect to Redis', async () => {
@@ -197,6 +213,12 @@ describe('RedisService', () => {
       expect(typeof client.set).toBe('function');
       expect(typeof client.get).toBe('function');
       expect(typeof client.del).toBe('function');
+    });
+
+    it('should provide health check method', async () => {
+      const health = await redisService.healthCheck();
+      expect(health).toHaveProperty('status');
+      expect(['up', 'down']).toContain(health.status);
     });
   });
 });

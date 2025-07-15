@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, OnModuleDestroy } from '@nestjs/common';
 import type { RedisModules, RedisFunctions, RedisScripts, RedisClientType, RedisClusterType } from 'redis';
 import { REDIS_CLIENT } from './redis.constants';
 
@@ -10,7 +10,8 @@ export class RedisService<
   M extends RedisModules = RedisModules,
   F extends RedisFunctions = RedisFunctions,
   S extends RedisScripts = RedisScripts
-> {
+> implements OnModuleDestroy
+{
   constructor(@Inject(REDIS_CLIENT) private readonly client: RedisClientType<M, F, S> | RedisClusterType<M, F, S>) {}
 
   /**
@@ -18,6 +19,44 @@ export class RedisService<
    */
   getClient(): RedisClientType<M, F, S> | RedisClusterType<M, F, S> {
     return this.client;
+  }
+
+  /**
+   * Check if the client is connected.
+   */
+  isConnected(): boolean {
+    return this.client.isOpen;
+  }
+
+  /**
+   * Wait for the client to be ready.
+   */
+  async waitForReady(): Promise<void> {
+    if (!this.isConnected()) {
+      await this.client.connect();
+    }
+  }
+
+  /**
+   * Health check for the Redis connection.
+   */
+  async healthCheck(): Promise<{ status: 'up' | 'down'; message?: string }> {
+    try {
+      if (!this.isConnected()) {
+        return { status: 'down', message: 'Client is not connected' };
+      }
+
+      // ping the client
+      const client = this.client as RedisClientType;
+      const result = await client.ping();
+      if (result === 'PONG') {
+        return { status: 'up' };
+      } else {
+        return { status: 'down', message: 'PING returned unexpected result' };
+      }
+    } catch (error) {
+      return { status: 'down', message: `Health check failed: ${String(error)}` };
+    }
   }
 
   /**
@@ -31,7 +70,6 @@ export class RedisService<
     // Safe type assertion after checking cluster mode
     return this.client as RedisClusterType<M, F, S>;
   }
-
 
   /***
    * Get the redis cluster client instance.
@@ -87,7 +125,13 @@ export class RedisService<
   /**
    * Quit the redis client instance.
    */
-  async onApplicationShutdown(): Promise<void> {
-    await this.client.close();
+  async onModuleDestroy(): Promise<void> {
+    try {
+      if (this.isConnected()) {
+        await this.client.close();
+      }
+    } catch (error) {
+      console.error('Error closing Redis connection:', error);
+    }
   }
 }
