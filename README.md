@@ -239,6 +239,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 ## Acknowledgments
 
+- [node-redis](https://github.com/redis/node-redis)
 - [Full-Featured Redis Client - ioredis](https://github.com/luin/ioredis)
 - [Official Redis Documentation](https://redis.io/)
 - [Official Redis Docker Image](https://hub.docker.com/_/redis)
