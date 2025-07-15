@@ -1,20 +1,107 @@
-# sudo docker compose exec cluster-m1 redis-cli -a mycluster --cluster create 127.0.0.1:7380 127.0.0.1:7381 127.0.0.1:7382 --cluster-yes
+---
+# image tag 8.0-RC2-pre is the one matching the 8.0 GA release
+x-client-libs-stack-image: &client-libs-stack-image
+  image: 'redislabs/client-libs-test:${CLIENT_LIBS_TEST_STACK_IMAGE_TAG:-8.0.2}'
+
+x-client-libs-image: &client-libs-image
+  image: 'redislabs/client-libs-test:${CLIENT_LIBS_TEST_IMAGE_TAG:-8.0.2}'
 
 services:
   redis:
-    image: redis/redis-stack-server:latest
-    network_mode: host
+    <<: *client-libs-image
+    container_name: redis-standalone
     environment:
-      - 'REDIS_ARGS=--port 6380 --requirepass myredis --appendonly yes'
-  cluster-m1:
-    image: redis:latest
-    network_mode: host
-    command: 'redis-server --port 7380 --requirepass mycluster --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes'
-  cluster-m2:
-    image: redis:latest
-    network_mode: host
-    command: 'redis-server --port 7381 --requirepass mycluster --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes'
-  cluster-m3:
-    image: redis:latest
-    network_mode: host
-    command: 'redis-server --port 7382 --requirepass mycluster --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes'
+      - TLS_ENABLED=yes
+      - REDIS_CLUSTER=no
+      - PORT=6379
+      - TLS_PORT=6666
+    command: ${REDIS_EXTRA_ARGS:---enable-debug-command yes --enable-module-command yes --tls-auth-clients optional --save ""}
+    ports:
+      - 6379:6379
+      - 6666:6666 # TLS port
+    volumes:
+      - './dockers/standalone:/redis/work'
+    profiles:
+      - standalone
+      - sentinel
+      - replica
+      - all-stack
+      - all
+
+  replica:
+    <<: *client-libs-image
+    container_name: redis-replica
+    depends_on:
+      - redis
+    environment:
+      - TLS_ENABLED=no
+      - REDIS_CLUSTER=no
+      - PORT=6380
+    command: ${REDIS_EXTRA_ARGS:---enable-debug-command yes --replicaof redis 6379 --protected-mode no --save ""}
+    ports:
+      - 6380:6380
+    volumes:
+      - './dockers/replica:/redis/work'
+    profiles:
+      - replica
+      - all-stack
+      - all
+
+  cluster:
+    <<: *client-libs-image
+    container_name: redis-cluster
+    environment:
+      - REDIS_CLUSTER=yes
+      - NODES=6
+      - REPLICAS=1
+      - TLS_ENABLED=yes
+      - PORT=16379
+      - TLS_PORT=27379
+    command: ${REDIS_EXTRA_ARGS:---enable-debug-command yes --enable-module-command yes --tls-auth-clients optional --save ""}
+    ports:
+      - '16379-16384:16379-16384'
+      - '27379-27384:27379-27384'
+    volumes:
+      - './dockers/cluster:/redis/work'
+    profiles:
+      - cluster
+      - all-stack
+      - all
+
+  sentinel:
+    <<: *client-libs-image
+    container_name: redis-sentinel
+    depends_on:
+      - redis
+    environment:
+      - REDIS_CLUSTER=no
+      - NODES=3
+      - PORT=26379
+    command: ${REDIS_EXTRA_ARGS:---sentinel}
+    ports:
+      - 26379:26379
+      - 26380:26380
+      - 26381:26381
+    volumes:
+      - './dockers/sentinel.conf:/redis/config-default/redis.conf'
+      - './dockers/sentinel:/redis/work'
+    profiles:
+      - sentinel
+      - all-stack
+      - all
+
+  redis-stack:
+    <<: *client-libs-stack-image
+    container_name: redis-stack
+    environment:
+      - REDIS_CLUSTER=no
+      - PORT=6379
+    command: ${REDIS_EXTRA_ARGS:---enable-debug-command yes --enable-module-command yes --save ""}
+    ports:
+      - 6479:6379
+    volumes:
+      - './dockers/redis-stack:/redis/work'
+    profiles:
+      - standalone
+      - all-stack
+      - all

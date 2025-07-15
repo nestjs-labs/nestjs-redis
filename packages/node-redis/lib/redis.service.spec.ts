@@ -13,10 +13,9 @@ describe('RedisService', () => {
           cluster: {
             rootNodes: [
               {
-                url: 'redis://127.0.0.1:7380',
-                password: 'mycluster'
-              }
-            ]
+                url: 'redis://127.0.0.1:16379',
+              },
+            ],
           }
         })
       ]

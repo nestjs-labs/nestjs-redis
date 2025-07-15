@@ -16,14 +16,32 @@ import { AppService } from './app.service';
     // }),
 
     // use factory
+    // RedisModule.forRootAsync({
+    //   imports: [ConfigModule],
+    //   useFactory: (configService: ConfigService) => {
+    //     const url: string = configService.get('REDIS_URL')!;
+    //     return {
+    //       url,
+    //       isGlobal: true,
+    //     };
+    //   },
+    //   inject: [ConfigService],
+    // }),
+
+    // use factory
     RedisModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => {
-        const url: string = configService.get('REDIS_URL')!;
-        console.log(url);
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const _url: string = configService.get('REDIS_URL')!;
         return {
-          url,
-          isGlobal: true,
+          cluster: {
+            rootNodes: [
+              {
+                url: 'redis://127.0.0.1:16379',
+              },
+            ],
+          },
         };
       },
       inject: [ConfigService],

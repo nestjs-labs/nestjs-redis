@@ -15,6 +15,7 @@ export class AppService {
     const redis = this.redisService.getClient();
     const info = await redis.info();
     return {
+      isCluster: this.redisService.isClusterMode(),
       message: 'Redis connection successful',
       serverInfo: info,
     };
