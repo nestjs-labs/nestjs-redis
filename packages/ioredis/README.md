@@ -83,11 +83,11 @@ This lib requires **Node.js >=16.13.0**, **NestJS ^10.0.0** | **NestJS ^11.0.0**
 
 ```sh
 # with npm
-npm install @nestjs-labs/nestjs-redis ioredis
+npm install @nestjs-labs/nestjs-ioredis ioredis
 # with yarn
-yarn add @nestjs-labs/nestjs-redis ioredis
+yarn add @nestjs-labs/nestjs-ioredis ioredis
 # with pnpm
-pnpm add @nestjs-labs/nestjs-redis ioredis
+pnpm add @nestjs-labs/nestjs-ioredis ioredis
 ```
 
 ## Usage

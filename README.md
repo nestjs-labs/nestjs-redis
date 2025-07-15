@@ -87,11 +87,11 @@ If you prefre [node-redis](https://github.com/redis/node-redis), check out [this
 
 ```sh
 # with npm
-npm install @nestjs-labs/nestjs-redis ioredis
+npm install @nestjs-labs/nestjs-redis redis
 # with yarn
-yarn add @nestjs-labs/nestjs-redis ioredis
+yarn add @nestjs-labs/nestjs-redis redis
 # with pnpm
-pnpm add @nestjs-labs/nestjs-redis ioredis
+pnpm add @nestjs-labs/nestjs-redis redis
 ```
 
 ## Usage
@@ -239,6 +239,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 ## Acknowledgments
 
+- [node-redis](https://github.com/redis/node-redis)
 - [Full-Featured Redis Client - ioredis](https://github.com/luin/ioredis)
 - [Official Redis Documentation](https://redis.io/)
 - [Official Redis Docker Image](https://hub.docker.com/_/redis)

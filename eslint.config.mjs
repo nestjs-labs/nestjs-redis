@@ -11,8 +11,8 @@ export default tseslint.config(
     ignores: ['packages/global.d.ts', '**/dist/', '**/*.mjs']
   },
   eslint.configs.recommended,
-  tseslint.configs.recommendedTypeChecked,
-  tseslint.configs.stylisticTypeChecked,
+  ...tseslint.configs.recommendedTypeChecked,
+  ...tseslint.configs.stylisticTypeChecked,
   {
     files: jestFiles,
     ...jest.configs['flat/recommended'],
@@ -27,7 +27,14 @@ export default tseslint.config(
       globals: globals.jest
     }
   },
-  eslintPluginPrettierRecommended,
+  {
+    ...eslintPluginPrettierRecommended,
+    rules: {
+      'prettier/prettier': 'off',
+      'arrow-parens': ['error', 'always'],
+      '@typescript-eslint/no-base-to-string': 'off'
+    }
+  },
   {
     linterOptions: {
       reportUnusedDisableDirectives: 'error'
