@@ -22,9 +22,26 @@ export class RedisService<
 
   /**
    * Get the redis cluster client instance.
+   * Returns null if the client is not in cluster mode.
    */
-  getCluster(): RedisClusterType<M, F, S> {
-    return this.client as unknown as RedisClusterType<M, F, S>;
+  getCluster(): RedisClusterType<M, F, S> | null {
+    if (!this.isClusterMode()) {
+      return null;
+    }
+    // Safe type assertion after checking cluster mode
+    return this.client as RedisClusterType<M, F, S>;
+  }
+
+
+  /***
+   * Get the redis cluster client instance.
+   * Throws an error if the client is not in cluster mode.
+   */
+  getClusterOrThrow(): RedisClusterType<M, F, S> {
+    if (!this.isClusterMode()) {
+      throw new Error('Client is not in cluster mode');
+    }
+    return this.client as RedisClusterType<M, F, S>;
   }
 
   /**
@@ -32,10 +49,7 @@ export class RedisService<
    */
   isClusterMode(): boolean {
     // check if the client is a cluster client
-    if ('masters' in this.client) {
-      return true;
-    }
-    return false;
+    return 'masters' in this.client;
   }
 
   /**
@@ -48,11 +62,16 @@ export class RedisService<
   /**
    * Get cluster information if in cluster mode.
    */
-  getClusterInfo() {
+  getClusterInfo(): 'single' | { type: 'cluster'; masters: number; nodes: string[] } {
     if (!this.isClusterMode()) {
       return 'single';
     }
+
     const cluster = this.getCluster();
+    if (!cluster) {
+      return 'single';
+    }
+
     try {
       const masters = cluster.masters;
       return {
