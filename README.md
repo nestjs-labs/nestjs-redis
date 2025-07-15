@@ -1,4 +1,4 @@
-![NPM Version](https://img.shields.io/npm/v/%40nestjs-redis%2Fnestjs-redis%2Falpha?style=for-the-badge)
+![NPM Version](https://img.shields.io/npm/v/%40nestjs-labs%2Fnestjs-ioredis?style=for-the-badge)
 [![Downloads][downloads-shield]][downloads-url]
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
@@ -44,6 +44,7 @@
         <li><a href="#installation">Installation</a></li>
       </ul>
     </li>
+    <li><a href="#packages">Packages</a></li>
     <li><a href="#usage">Usage</a></li>
     <li><a href="#faqs">FAQs</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
@@ -55,12 +56,16 @@
 
 ## About The Project
 
+> This project is forked from [liaoliaots/nestjs-redis](https://github.com/liaoliaots/nestjs-redis).
+
 ### Features
 
 - **Both redis & cluster are supported**: You can also specify multiple instances.
 - **Health**: Checks health of **redis & cluster** server.
 - **Rigorously tested**: With 100+ tests and 100% code coverage.
 - **Services**: Retrieves **redis & cluster** clients via `RedisManager`, `ClusterManager`.
+- **Multiple Redis clients**: Support for ioredis only.
+- **Health checks**: Dedicated health check module for Redis monitoring.
 
 ### Test coverage
 
@@ -72,18 +77,27 @@
 
 ### Prerequisites
 
-This lib requires **Node.js >=16.13.0**, **NestJS ^10.0.0**, **ioredis ^5.0.0**.
+This lib requires **Node.js >=16.13.0**, **NestJS ^10.0.0**, **ioredis ^5.0.0** or **redis ^5.6.0**.
 
 - If you depend on **ioredis 5** & **NestJS 10**, please use version **10** of the lib.
 - If you depend on **ioredis 5** & **NestJS 9**, please use version **9** of the lib.
 - If you depend on **ioredis 5**, **NestJS 7** or **8**, please use [version 8](https://github.com/nestjs-labs/nestjs-redis/tree/v8.2.2) of the lib.
 - If you depend on **ioredis 4**, please use [version 7](https://github.com/nestjs-labs/nestjs-redis/tree/v7.0.0) of the lib.
 
-### Node-Redis
-
-If you prefre [node-redis](https://github.com/redis/node-redis), check out [this guide](), but it is in working progress.
-
 ### Installation
+
+#### For ioredis (Recommended)
+
+```sh
+# with npm
+npm install @nestjs-labs/nestjs-ioredis ioredis
+# with yarn
+yarn add @nestjs-labs/nestjs-ioredis ioredis
+# with pnpm
+pnpm add @nestjs-labs/nestjs-ioredis ioredis
+```
+
+#### For node-redis
 
 ```sh
 # with npm
@@ -92,6 +106,114 @@ npm install @nestjs-labs/nestjs-redis redis
 yarn add @nestjs-labs/nestjs-redis redis
 # with pnpm
 pnpm add @nestjs-labs/nestjs-redis redis
+```
+
+#### For health checks
+
+```sh
+# with npm
+npm install @nestjs/terminus @nestjs-labs/nestjs-redis-health ioredis
+# with yarn
+yarn add @nestjs/terminus @nestjs-labs/nestjs-redis-health ioredis
+# with pnpm
+pnpm add @nestjs/terminus @nestjs-labs/nestjs-redis-health ioredis
+```
+
+## Packages
+
+This monorepo contains three main packages:
+
+### 1. @nestjs-labs/nestjs-ioredis
+
+Redis(ioredis) module for Nest framework (node.js).
+
+**Features:**
+- Full ioredis support with all features
+- Redis cluster support
+- Sentinel support
+- Multiple instances support
+- Comprehensive testing with 100% coverage
+
+**Installation:**
+```sh
+npm install @nestjs-labs/nestjs-ioredis ioredis
+```
+
+**Quick Start:**
+```typescript
+import { Module } from '@nestjs/common';
+import { RedisModule } from '@nestjs-labs/nestjs-ioredis';
+
+@Module({
+  imports: [
+    RedisModule.forRoot({
+      config: {
+        host: 'localhost',
+        port: 6379,
+        password: 'authpassword'
+      }
+    }),
+  ],
+})
+export class AppModule {}
+```
+
+### 2. @nestjs-labs/nestjs-redis
+
+Redis(node-redis) module for Nest framework (node.js).
+
+**Features:**
+- Official node-redis client support
+- Modern Redis client with latest features
+- TypeScript support
+- Simple and clean API
+
+**Installation:**
+```sh
+npm install @nestjs-labs/nestjs-redis redis
+```
+
+**Quick Start:**
+```typescript
+import { Module } from '@nestjs/common';
+import { RedisModule } from '@nestjs-labs/nestjs-redis';
+
+@Module({
+  imports: [
+    RedisModule.forRoot({
+      url: 'redis://localhost:6379',
+    }),
+  ],
+})
+export class AppModule {}
+```
+
+### 3. @nestjs-labs/nestjs-redis-health
+
+Redis health checks module for Nest framework (node.js).
+
+**Features:**
+- Health checks for both Redis and Redis Cluster
+- Integration with @nestjs/terminus
+- Memory threshold monitoring
+- Timeout configuration
+- Comprehensive health indicators
+
+**Installation:**
+```sh
+npm install @nestjs/terminus @nestjs-labs/nestjs-redis-health ioredis
+```
+
+**Quick Start:**
+```typescript
+import { Module } from '@nestjs/common';
+import { TerminusModule } from '@nestjs/terminus';
+import { RedisHealthModule } from '@nestjs-labs/nestjs-redis-health';
+
+@Module({
+  imports: [TerminusModule, RedisHealthModule],
+})
+export class AppModule {}
 ```
 
 ## Usage
@@ -154,7 +276,7 @@ Examples of code:
 ```ts
 // redis-config.service.ts
 import { Injectable } from '@nestjs/common';
-import { RedisModuleOptions, RedisOptionsFactory } from '@nestjs-labs/nestjs-redis';
+import { RedisModuleOptions, RedisOptionsFactory } from '@nestjs-labs/nestjs-ioredis';
 
 @Injectable()
 export class RedisConfigService implements RedisOptionsFactory {
@@ -176,7 +298,7 @@ export class RedisConfigService implements RedisOptionsFactory {
 ```ts
 // app.module.ts
 import { Module } from '@nestjs/common';
-import { RedisModule } from '@nestjs-labs/nestjs-redis';
+import { RedisModule } from '@nestjs-labs/nestjs-ioredis';
 import { RedisConfigService } from './redis-config.service';
 
 @Module({
@@ -194,7 +316,7 @@ export class AppModule {}
 ```ts
 // my-redis.module.ts
 import { Module } from '@nestjs/common';
-import { RedisModule } from '@nestjs-labs/nestjs-redis';
+import { RedisModule } from '@nestjs-labs/nestjs-ioredis';
 import { RedisConfigService } from './redis-config.service';
 
 @Module({
@@ -244,11 +366,11 @@ Distributed under the MIT License. See `LICENSE` for more information.
 - [Official Redis Documentation](https://redis.io/)
 - [Official Redis Docker Image](https://hub.docker.com/_/redis)
 
-[downloads-shield]: https://img.shields.io/npm/dm/@nestjs-labs/nestjs-redis?style=for-the-badge
-[downloads-url]: https://www.npmjs.com/package/@nestjs-labs/nestjs-redis
+[downloads-shield]: https://img.shields.io/npm/dm/@nestjs-labs/nestjs-ioredis?style=for-the-badge
+[downloads-url]: https://www.npmjs.com/package/@nestjs-labs/nestjs-ioredis
 [stars-shield]: https://img.shields.io/github/stars/nestjs-labs/nestjs-redis?style=for-the-badge
 [stars-url]: https://github.com/nestjs-labs/nestjs-redis/stargazers
 [issues-shield]: https://img.shields.io/github/issues/nestjs-labs/nestjs-redis?style=for-the-badge
 [issues-url]: https://github.com/nestjs-labs/nestjs-redis/issues
-[license-shield]: https://img.shields.io/npm/l/@nestjs-labs/nestjs-redis?style=for-the-badge
+[license-shield]: https://img.shields.io/npm/l/@nestjs-labs/nestjs-ioredis?style=for-the-badge
 [license-url]: https://github.com/nestjs-labs/nestjs-redis/blob/main/LICENSE
