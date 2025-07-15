@@ -12,7 +12,7 @@ export const createRedisClient = (): Provider => ({
     if (options.cluster) {
       const cluster = createCluster(options.cluster);
       await cluster.connect();
-      return cluster as unknown as RedisClusterType;
+      return cluster as RedisClusterType;
     }
 
     const client = createClient(options) as RedisClientType;
