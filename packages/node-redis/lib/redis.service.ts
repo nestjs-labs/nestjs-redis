@@ -20,6 +20,9 @@ export class RedisService<
     return this.client;
   }
 
+  /**
+   * Quit the redis client instance.
+   */
   async onApplicationShutdown(): Promise<void> {
     await this.client.quit();
   }

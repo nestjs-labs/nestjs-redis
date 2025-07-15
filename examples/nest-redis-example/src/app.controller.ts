@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Post, Query } from '@nestjs/common';
 import { AppService } from './app.service';
 
 @Controller()
@@ -24,5 +24,10 @@ export class AppController {
   @Get('get-key')
   async getKey(@Query('key') key: string) {
     return await this.appService.getKey(key);
+  }
+
+  @Delete('delete-key')
+  async deleteKey(@Body('key') key: string) {
+    return await this.appService.deleteKey(key);
   }
 }

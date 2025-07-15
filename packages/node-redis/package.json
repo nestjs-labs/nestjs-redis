@@ -1,13 +1,14 @@
 {
   "name": "@nestjs-labs/nestjs-redis",
-  "version": "1.0.0",
+  "version": "11.0.0",
   "description": "Redis(node-redis) module for Nest framework (node.js).",
-  "author": "LiaoLiao <yxiaosong002@gmail.com>",
+  "author": "Nestjs-labs <h499871809@gmail.com>",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "commonjs",
   "files": [
-    "dist"
+    "dist",
+    "README.md"
   ],
   "license": "MIT",
   "keywords": [
