@@ -217,7 +217,7 @@ export class AppModule {}
 ```
 
 ## Usage
-
+- [Documentation](https://nestjs-labs.github.io/nestjs-redis)
 - [Redis](/docs/latest/redis.md)
   - [Usage](/docs/latest/redis.md)
   - [Configuration](/docs/latest/redis.md#configuration)

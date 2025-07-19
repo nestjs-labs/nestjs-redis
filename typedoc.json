@@ -1,0 +1,11 @@
+{
+  "entryPoints": ["packages/*"],
+  "out": "./_docs",
+  "exclude": ["**/node_modules/**", "**/test/**"],
+  "name": "Nestjs Redis Packages",
+  "entryPointStrategy": "packages",
+  "sort": ["source-order"],
+  "searchInComments": true,
+  "includeVersion": true,
+  "readme": "README.md"
+}

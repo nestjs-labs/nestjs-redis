@@ -1,52 +1,11 @@
 // @ts-check
-import eslint from '@eslint/js';
-import tseslint from 'typescript-eslint';
-import globals from 'globals';
-import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
-import jest from 'eslint-plugin-jest';
+import { defineConfig } from 'eslint/config';
+import nestEslint from '@nestjs-labs/eslint-config/nest';
+import jestEslint from '@nestjs-labs/eslint-config/jest';
 
-const jestFiles = ['**/*.e2e-spec.ts', '**/*.spec.ts'];
-export default tseslint.config(
+export default defineConfig([
   {
-    ignores: ['packages/global.d.ts', '**/dist/', '**/*.mjs']
-  },
-  eslint.configs.recommended,
-  ...tseslint.configs.recommendedTypeChecked,
-  ...tseslint.configs.stylisticTypeChecked,
-  {
-    files: jestFiles,
-    ...jest.configs['flat/recommended'],
-    languageOptions: {
-      globals: globals.jest
-    }
-  },
-  {
-    files: jestFiles,
-    ...jest.configs['flat/style'],
-    languageOptions: {
-      globals: globals.jest
-    }
-  },
-  {
-    ...eslintPluginPrettierRecommended,
-    rules: {
-      'prettier/prettier': 'off',
-      'arrow-parens': ['error', 'always'],
-      '@typescript-eslint/no-base-to-string': 'off'
-    }
-  },
-  {
-    linterOptions: {
-      reportUnusedDisableDirectives: 'error'
-    },
-    languageOptions: {
-      globals: {
-        ...globals.node
-      },
-      parserOptions: {
-        projectService: true,
-        tsconfigRootDir: import.meta.dirname
-      }
-    }
+    files: ['**/*.ts', '**/*.js'],
+    extends: [nestEslint, jestEslint]
   }
-);
+]);

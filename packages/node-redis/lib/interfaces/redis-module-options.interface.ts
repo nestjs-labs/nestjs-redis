@@ -1,6 +1,5 @@
-import type { Provider, DynamicModule } from '@nestjs/common';
-
-import { OPTIONS_TYPE, ASYNC_OPTIONS_TYPE } from '../redis.module-definition';
+import type { DynamicModule, Provider } from '@nestjs/common';
+import type { ASYNC_OPTIONS_TYPE, OPTIONS_TYPE } from '../redis.module-definition';
 
 export interface RedisExtraProviders {
   /**

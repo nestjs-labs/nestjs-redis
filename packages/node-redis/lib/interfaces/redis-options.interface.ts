@@ -1,9 +1,8 @@
-import { RedisClientOptions, RedisModules, RedisFunctions, RedisScripts, RedisClusterOptions } from 'redis';
+import type { RedisClientOptions, RedisClusterOptions, RedisFunctions, RedisModules, RedisScripts } from 'redis';
 
 /**
  * Interface defining Redis options.
  *
- * @publicApi
  */
 export interface RedisOptions<
   M extends RedisModules = RedisModules,

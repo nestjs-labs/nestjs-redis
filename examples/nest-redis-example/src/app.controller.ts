@@ -1,6 +1,7 @@
 import { Body, Controller, Delete, Get, Post, Query } from '@nestjs/common';
-import { InjectRedis } from '@nestjs-labs/nestjs-redis';
 import { RedisClientType } from 'redis';
+
+import { InjectRedis } from '@nestjs-labs/nestjs-redis';
 
 import { AppService } from './app.service';
 
@@ -29,6 +30,7 @@ export class AppController {
   @Post('set-key')
   async setKey(@Body() body: { key: string; value: string }) {
     const { key, value } = body;
+
     return await this.appService.setKey(key, value);
   }
 

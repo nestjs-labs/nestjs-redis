@@ -1,5 +1,7 @@
-import { Injectable, Inject, OnModuleDestroy } from '@nestjs/common';
-import type { RedisModules, RedisFunctions, RedisScripts, RedisClientType, RedisClusterType } from 'redis';
+import type { RedisClientType, RedisClusterType, RedisFunctions, RedisModules, RedisScripts } from 'redis';
+
+import { Inject, Injectable, OnModuleDestroy } from '@nestjs/common';
+
 import { REDIS_CLIENT } from './redis.constants';
 
 /**
@@ -40,22 +42,23 @@ export class RedisService<
   /**
    * Health check for the Redis connection.
    */
-  async healthCheck(): Promise<{ status: 'up' | 'down'; message?: string }> {
+  async healthCheck(): Promise<{ message?: string; status: 'up' | 'down' }> {
     try {
       if (!this.isConnected()) {
-        return { status: 'down', message: 'Client is not connected' };
+        return { message: 'Client is not connected', status: 'down' };
       }
 
       // ping the client
       const client = this.client as RedisClientType;
       const result = await client.ping();
+
       if (result === 'PONG') {
         return { status: 'up' };
       } else {
-        return { status: 'down', message: 'PING returned unexpected result' };
+        return { message: 'PING returned unexpected result', status: 'down' };
       }
     } catch (error) {
-      return { status: 'down', message: `Health check failed: ${String(error)}` };
+      return { message: `Health check failed: ${String(error)}`, status: 'down' };
     }
   }
 
@@ -67,11 +70,12 @@ export class RedisService<
     if (!this.isClusterMode()) {
       return null;
     }
+
     // Safe type assertion after checking cluster mode
     return this.client as RedisClusterType<M, F, S>;
   }
 
-  /***
+  /** *
    * Get the redis cluster client instance.
    * Throws an error if the client is not in cluster mode.
    */
@@ -79,6 +83,7 @@ export class RedisService<
     if (!this.isClusterMode()) {
       throw new Error('Client is not in cluster mode');
     }
+
     return this.client as RedisClusterType<M, F, S>;
   }
 
@@ -100,22 +105,24 @@ export class RedisService<
   /**
    * Get cluster information if in cluster mode.
    */
-  getClusterInfo(): 'single' | { type: 'cluster'; masters: number; nodes: string[] } {
+  getClusterInfo(): 'single' | { masters: number; type: 'cluster'; nodes: string[] } {
     if (!this.isClusterMode()) {
       return 'single';
     }
 
     const cluster = this.getCluster();
+
     if (!cluster) {
       return 'single';
     }
 
     try {
       const masters = cluster.masters;
+
       return {
-        type: 'cluster',
         masters: masters.length,
-        nodes: masters.map((node) => node.toString())
+        nodes: masters.map(node => node.toString()),
+        type: 'cluster'
       };
     } catch (error) {
       throw new Error(`Failed to get cluster info: ${String(error)}`);

@@ -2,6 +2,8 @@
 
 Redis(node-redis) module for Nest framework (node.js).
 
+- [Documentation](https://nestjs-labs.github.io/nestjs-redis/)
+
 ## Installation
 
 ```bash

@@ -1,5 +1,5 @@
 {
-  "extends": "../tsconfig.base.json",
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "forceConsistentCasingInFileNames": true,
     "outDir": "dist",
@@ -7,6 +7,5 @@
       "@/*": ["./lib/*"]
     }
   },
-  "include": ["lib", "test"],
-  "files": ["../global.d.ts"]
+  "include": ["lib", "test"]
 }
