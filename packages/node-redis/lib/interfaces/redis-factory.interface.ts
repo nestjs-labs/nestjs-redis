@@ -1,4 +1,4 @@
-import { RedisOptions } from './redis-options.interface';
+import type { RedisOptions } from './redis-options.interface';
 
 /**
  * Interface describing a `RedisOptionsFactory`.  Providers supplying configuration

@@ -1,11 +1,13 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+
 import { RedisModule } from '@nestjs-labs/nestjs-redis';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
 @Module({
+  controllers: [AppController],
   imports: [
     ConfigModule.forRoot(),
 
@@ -31,11 +33,12 @@ import { AppService } from './app.service';
     // use factory
     RedisModule.forRootAsync({
       imports: [ConfigModule],
+      inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const _url: string = configService.get('REDIS_URL')!;
+
         return {
-          isGlobal: true,
           cluster: {
             rootNodes: [
               {
@@ -43,12 +46,11 @@ import { AppService } from './app.service';
               },
             ],
           },
+          isGlobal: true,
         };
       },
-      inject: [ConfigService],
     }),
   ],
-  controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}

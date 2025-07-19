@@ -8,10 +8,10 @@ export { RedisService } from './redis.service';
 export { InjectRedis } from './redis.providers';
 
 // Types and Interfaces
-export type { RedisClientType, RedisClusterType, RedisClusterOptions } from 'redis';
-export type { RedisOptions } from './interfaces/redis-options.interface';
-export type { RedisModuleOptions, RedisModuleAsyncOptions } from './interfaces/redis-module-options.interface';
 export type { RedisOptionsFactory } from './interfaces/redis-factory.interface';
+export type { RedisModuleAsyncOptions, RedisModuleOptions } from './interfaces/redis-module-options.interface';
+export type { RedisOptions } from './interfaces/redis-options.interface';
+export type { RedisClientType, RedisClusterOptions, RedisClusterType } from 'redis';
 
 // Constants
 export { REDIS_CLIENT } from './redis.constants';
