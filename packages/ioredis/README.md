@@ -53,6 +53,8 @@
   </ol>
 </details>
 
+> if you are looking for the node-redis module for nestjs, please use [@nestjs-labs/nestjs-redis](https://www.npmjs.com/package/@nestjs-labs/nestjs-redis) instead.
+
 ## About The Project
 
 ### Features

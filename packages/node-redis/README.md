@@ -2,6 +2,8 @@
 
 Redis(node-redis) module for Nest framework (node.js).
 
+> if you are looking for the ioredis module for nestjs, please use [@nestjs-labs/ioredis](https://www.npmjs.com/package/@nestjs-labs/nestjs-ioredis) instead.
+
 - [Documentation](https://nestjs-labs.github.io/nestjs-redis/)
 
 ## Installation

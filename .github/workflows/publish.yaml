@@ -1,5 +1,11 @@
 name: Publish
-on: workflow_dispatch
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
 jobs:
   build:
     runs-on: ubuntu-24.04
@@ -19,6 +25,6 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm -F "@nestjs-labs/nestjs-redis" run lint
       - run: pnpm -F "@nestjs-labs/nestjs-redis" run build
-      # - run: pnpm -r run publish
-      #   env:
-      #     NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - run: pnpm -r run publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
