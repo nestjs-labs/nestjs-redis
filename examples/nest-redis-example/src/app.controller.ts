@@ -1,7 +1,13 @@
 import { Body, Controller, Delete, Get, Post, Query } from '@nestjs/common';
+import {
+  HealthCheck,
+  HealthCheckResult,
+  HealthCheckService,
+} from '@nestjs/terminus';
 import { RedisClientType } from 'redis';
 
 import { InjectRedis } from '@nestjs-labs/nestjs-redis';
+import { RedisHealthIndicator } from '@nestjs-labs/nestjs-redis-health';
 
 import { AppService } from './app.service';
 
@@ -10,6 +16,8 @@ export class AppController {
   constructor(
     private readonly appService: AppService,
     @InjectRedis() private readonly redis: RedisClientType,
+    private readonly health: HealthCheckService,
+    private readonly redisIndicator: RedisHealthIndicator,
   ) {}
 
   @Get('redis-get')
@@ -42,5 +50,19 @@ export class AppController {
   @Delete('delete-key')
   async deleteKey(@Body('key') key: string) {
     return await this.appService.deleteKey(key);
+  }
+
+  @Get('health')
+  @HealthCheck()
+  async healthChecks(): Promise<HealthCheckResult> {
+    return await this.health.check([
+      () =>
+        this.redisIndicator.checkHealth('redis', {
+          // @ts-expect-error node-redis client is used; health package types target ioredis only
+          client: this.redis,
+          timeout: 500,
+          type: 'redis',
+        }),
+    ]);
   }
 }

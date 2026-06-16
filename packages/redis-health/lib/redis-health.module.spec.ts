@@ -1,4 +1,7 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import type { TestingModule } from '@nestjs/testing';
+
+import { Test } from '@nestjs/testing';
+
 import { RedisHealthIndicator } from './indicators/redis.health';
 import { RedisHealthModule } from './redis-health.module';
 

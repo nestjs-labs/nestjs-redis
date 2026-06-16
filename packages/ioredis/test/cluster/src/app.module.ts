@@ -1,5 +1,6 @@
+import { ClusterModule, ClusterModuleOptions } from '@/index.js';
 import { Module } from '@nestjs/common';
-import { ClusterModule, ClusterModuleOptions } from '@/.';
+
 import { InjectController } from './controllers/inject.controller';
 import { ManagerController } from './controllers/manager.controller';
 
