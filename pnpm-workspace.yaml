@@ -1,5 +1,8 @@
 packages:
   - packages/*
   - examples/*
+allowBuilds:
+  '@nestjs/core': true
+  '@swc/core': true
 ignoredBuiltDependencies:
   - '@nestjs/core'

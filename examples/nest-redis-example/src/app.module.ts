@@ -1,7 +1,9 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TerminusModule } from '@nestjs/terminus';
 
 import { RedisModule } from '@nestjs-labs/nestjs-redis';
+import { RedisHealthModule } from '@nestjs-labs/nestjs-redis-health';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -10,6 +12,8 @@ import { AppService } from './app.service';
   controllers: [AppController],
   imports: [
     ConfigModule.forRoot(),
+    TerminusModule,
+    RedisHealthModule,
 
     // use root
     // RedisModule.forRoot({

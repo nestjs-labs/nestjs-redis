@@ -1,6 +1,7 @@
 {
   "name": "@nestjs-labs/nestjs-monorepo",
   "version": "10",
+  "packageManager": "pnpm@11.0.8",
   "description": "Redis module for Nest framework (node.js).",
   "author": "LiaoLiao <yxiaosong002@gmail.com>",
   "private": true,
@@ -9,10 +10,14 @@
     "prepare": "husky",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "changeset publish",
     "typedoc": "typedoc",
     "docs-all": "npm run typedoc --workspaces --if-present"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.31.0",
     "@commitlint/cli": "19.6.0",
     "@commitlint/config-conventional": "19.6.0",
     "@nestjs-labs/eslint-config": "^1.0.1",
