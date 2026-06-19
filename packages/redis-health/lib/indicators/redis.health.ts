@@ -1,9 +1,14 @@
+import type { RedisCheckSettings } from './redis-check-settings.interface';
+
 import { ABNORMALLY_MEMORY_USAGE, CANNOT_BE_READ, FAILED_CLUSTER_STATE, INVALID_TYPE } from '@health/messages';
 import { isNullish, parseUsedMemory, promiseTimeout, removeLineBreaks } from '@health/utils';
 import { Injectable, Scope } from '@nestjs/common';
 import { HealthCheckError, HealthIndicator, HealthIndicatorResult } from '@nestjs/terminus';
 
-import { RedisCheckSettings } from './redis-check-settings.interface';
+export interface RedisHealthClient {
+  info: (section: string) => Promise<string>;
+  ping: () => Promise<unknown>;
+}
 
 /**
  * The RedisHealthIndicator is used for health checks related to redis.
@@ -26,10 +31,12 @@ export class RedisHealthIndicator extends HealthIndicator {
 
     try {
       if (type === 'redis') {
-        await promiseTimeout(options.timeout ?? 1000, client.ping());
+        const redisClient = client as RedisHealthClient;
+
+        await promiseTimeout(options.timeout ?? 1000, redisClient.ping());
 
         if (!isNullish(options.memoryThreshold)) {
-          const info = await client.info('memory');
+          const info = await redisClient.info('memory');
 
           if (parseUsedMemory(removeLineBreaks(info)) > options.memoryThreshold) {
             throw new Error(ABNORMALLY_MEMORY_USAGE);

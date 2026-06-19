@@ -1,4 +1,5 @@
-import type { Redis, Cluster } from 'ioredis';
+import type { Cluster, Redis } from 'ioredis';
+import type { RedisClientType } from 'redis';
 
 /**
  * The settings for redis/cluster checks.
@@ -15,7 +16,7 @@ export type RedisCheckSettings =
       /**
        * The client which the health check should get executed. This option is required.
        */
-      client: Redis;
+      client: Redis | RedisClientType;
 
       /**
        * The amount of time the check should require in `ms`.

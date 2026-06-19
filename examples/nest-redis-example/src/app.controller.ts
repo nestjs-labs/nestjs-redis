@@ -58,7 +58,6 @@ export class AppController {
     return await this.health.check([
       () =>
         this.redisIndicator.checkHealth('redis', {
-          // @ts-expect-error node-redis client is used; health package types target ioredis only
           client: this.redis,
           timeout: 500,
           type: 'redis',
