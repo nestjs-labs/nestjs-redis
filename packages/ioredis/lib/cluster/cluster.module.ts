@@ -1,18 +1,19 @@
-import { Module, DynamicModule, Provider, OnApplicationShutdown } from '@nestjs/common';
+import { MissingConfigurationsError } from '@/errors/index.js';
+import { generateErrorMessage } from '@/messages/index.js';
+import { isError } from '@/utils/index.js';
+import { DynamicModule, Module, OnApplicationShutdown, Provider } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
-import { ClusterModuleOptions, ClusterModuleAsyncOptions, ClusterClients } from './interfaces';
-import { ClusterService } from './cluster.service';
+
+import { ClusterClients, ClusterModuleAsyncOptions, ClusterModuleOptions } from './interfaces/index.js';
+import { CLUSTER_CLIENTS, CLUSTER_MERGED_OPTIONS } from './cluster.constants';
 import {
-  createOptionsProvider,
-  createAsyncProviders,
   clusterClientsProvider,
+  createAsyncProviders,
+  createOptionsProvider,
   mergedOptionsProvider
 } from './cluster.providers';
-import { CLUSTER_CLIENTS, CLUSTER_MERGED_OPTIONS } from './cluster.constants';
-import { isError } from '@/utils';
-import { logger } from './cluster-logger';
-import { MissingConfigurationsError } from '@/errors';
-import { generateErrorMessage } from '@/messages';
+import { ClusterService } from './cluster.service';
+import { logger } from './cluster-logger.js';
 
 @Module({})
 export class ClusterModule implements OnApplicationShutdown {
@@ -34,10 +35,10 @@ export class ClusterModule implements OnApplicationShutdown {
     ];
 
     return {
+      exports: [ClusterService],
       global: isGlobal,
       module: ClusterModule,
-      providers,
-      exports: [ClusterService]
+      providers
     };
   }
 
@@ -62,28 +63,33 @@ export class ClusterModule implements OnApplicationShutdown {
     ];
 
     return {
+      exports: [ClusterService],
       global: isGlobal,
-      module: ClusterModule,
       imports: options.imports,
-      providers,
-      exports: [ClusterService]
+      module: ClusterModule,
+      providers
     };
   }
 
   async onApplicationShutdown(): Promise<void> {
     const { closeClient } = this.moduleRef.get<ClusterModuleOptions>(CLUSTER_MERGED_OPTIONS, { strict: false });
+
     if (closeClient) {
       const clients = this.moduleRef.get<ClusterClients>(CLUSTER_CLIENTS, { strict: false });
+
       for (const [namespace, client] of clients) {
         if (client.status === 'end') continue;
+
         if (client.status === 'ready') {
           try {
             await client.quit();
           } catch (e) {
             if (isError(e)) logger.error(generateErrorMessage(namespace, e.message), e.stack);
           }
+
           continue;
         }
+
         client.disconnect();
       }
     }

@@ -1,11 +1,11 @@
 // Redis Module
-export { RedisModule } from './redis.module';
+export { RedisModule } from './redis.module.js';
 
 // Redis Service
-export { RedisService } from './redis.service';
+export { RedisService } from './redis.service.js';
 
 // Redis Providers
-export { InjectRedis } from './redis.providers';
+export { InjectRedis } from './redis.providers.js';
 
 // Types and Interfaces
 export type { RedisOptionsFactory } from './interfaces/redis-factory.interface';

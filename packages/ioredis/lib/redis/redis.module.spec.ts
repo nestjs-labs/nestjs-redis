@@ -1,11 +1,14 @@
-import { ModuleRef } from '@nestjs/core';
-import { RedisModule } from './redis.module';
-import { RedisModuleAsyncOptions } from './interfaces';
-import { destroy } from './common';
-import { logger } from './redis-logger';
-import { REDIS_CLIENTS, REDIS_MERGED_OPTIONS } from './redis.constants';
+import type { ModuleRef } from '@nestjs/core';
+import type { RedisModuleAsyncOptions } from './interfaces/index.js';
 
-jest.mock('./common');
+import { removeListeners } from './common/index.js';
+import { REDIS_CLIENTS, REDIS_MERGED_OPTIONS } from './redis.constants.js';
+import { RedisModule } from './redis.module.js';
+import { logger } from './redis-logger.js';
+
+jest.mock('./common', () => ({
+  removeListeners: jest.fn()
+}));
 jest.mock('./redis-logger', () => ({
   logger: {
     error: jest.fn()
@@ -15,6 +18,7 @@ jest.mock('./redis-logger', () => ({
 describe('forRoot', () => {
   test('should work correctly', () => {
     const module = RedisModule.forRoot();
+
     expect(module.global).toBe(true);
     expect(module.module).toBe(RedisModule);
     expect(module.providers?.length).toBeGreaterThanOrEqual(4);
@@ -25,12 +29,13 @@ describe('forRoot', () => {
 describe('forRootAsync', () => {
   test('should work correctly', () => {
     const options: RedisModuleAsyncOptions = {
+      extraProviders: [{ provide: '', useValue: '' }],
       imports: [],
-      useFactory: () => ({}),
       inject: [],
-      extraProviders: [{ provide: '', useValue: '' }]
+      useFactory: () => ({})
     };
     const module = RedisModule.forRootAsync(options);
+
     expect(module.global).toBe(true);
     expect(module.module).toBe(RedisModule);
     expect(module.imports).toBeArray();
@@ -43,6 +48,7 @@ describe('forRootAsync', () => {
       useFactory: () => ({})
     };
     const module = RedisModule.forRootAsync(options);
+
     expect(module.providers?.length).toBeGreaterThanOrEqual(4);
   });
 
@@ -52,30 +58,30 @@ describe('forRootAsync', () => {
 });
 
 describe('onApplicationShutdown', () => {
-  const mockDestroy = destroy as jest.MockedFunction<typeof destroy>;
+  const mockRemoveListeners = removeListeners as jest.MockedFunction<typeof removeListeners>;
   const mockError = jest.spyOn(logger, 'error');
 
   beforeEach(() => {
-    mockDestroy.mockClear();
+    mockRemoveListeners.mockClear();
     mockError.mockClear();
   });
 
   test('should work correctly', async () => {
-    mockDestroy.mockResolvedValue([
-      [
-        { status: 'fulfilled', value: '' },
-        { status: 'rejected', reason: new Error('') }
-      ]
-    ]);
+    const mockQuit = jest.fn().mockRejectedValue(new Error('quit failed'));
+    const client = { quit: mockQuit, status: 'ready' };
 
     const module = new RedisModule({
       get: (token: unknown) => {
         if (token === REDIS_MERGED_OPTIONS) return { closeClient: true };
-        if (token === REDIS_CLIENTS) return new Map();
+        if (token === REDIS_CLIENTS) return new Map([['default', client]]);
+
+        return undefined;
       }
     } as ModuleRef);
+
     await module.onApplicationShutdown();
-    expect(mockDestroy).toHaveBeenCalledTimes(1);
+    expect(mockQuit).toHaveBeenCalledTimes(1);
+    expect(mockRemoveListeners).toHaveBeenCalledWith(client);
     expect(mockError).toHaveBeenCalledTimes(1);
   });
 });

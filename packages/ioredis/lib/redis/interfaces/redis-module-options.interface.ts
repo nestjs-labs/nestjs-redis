@@ -1,6 +1,6 @@
-import { Type, ModuleMetadata, Provider, InjectionToken, OptionalFactoryDependency } from '@nestjs/common';
+import type { Namespace } from '@/interfaces';
+import type { InjectionToken, ModuleMetadata, OptionalFactoryDependency, Provider, Type } from '@nestjs/common';
 import type { Redis, RedisOptions } from 'ioredis';
-import { Namespace } from '@/interfaces';
 
 export interface RedisClientOptions extends RedisOptions {
   /**
@@ -94,7 +94,7 @@ export interface RedisModuleOptions {
 }
 
 export interface RedisModuleAsyncOptions extends Pick<ModuleMetadata, 'imports'> {
-  useFactory?: (...args: any[]) => RedisModuleOptions | Promise<RedisModuleOptions>;
+  useFactory?: (...args: unknown[]) => RedisModuleOptions | Promise<RedisModuleOptions>;
   useClass?: Type<RedisOptionsFactory>;
   useExisting?: Type<RedisOptionsFactory>;
   inject?: (InjectionToken | OptionalFactoryDependency)[];

@@ -1,19 +1,20 @@
-import { Module, DynamicModule, Provider, OnApplicationShutdown } from '@nestjs/common';
+import { MissingConfigurationsError } from '@/errors/index.js';
+import { generateErrorMessage } from '@/messages/index.js';
+import { isError } from '@/utils/index.js';
+import { DynamicModule, Module, OnApplicationShutdown, Provider } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
-import { RedisModuleOptions, RedisModuleAsyncOptions, RedisClients } from './interfaces';
-import { RedisService } from './redis.service';
-import {
-  createOptionsProvider,
-  createAsyncProviders,
-  redisClientsProvider,
-  mergedOptionsProvider
-} from './redis.providers';
+
+import { removeListeners } from './common/index.js';
+import { RedisClients, RedisModuleAsyncOptions, RedisModuleOptions } from './interfaces/index.js';
 import { REDIS_CLIENTS, REDIS_MERGED_OPTIONS } from './redis.constants';
-import { isError } from '@/utils';
-import { logger } from './redis-logger';
-import { MissingConfigurationsError } from '@/errors';
-import { generateErrorMessage } from '@/messages';
-import { removeListeners } from './common';
+import {
+  createAsyncProviders,
+  createOptionsProvider,
+  mergedOptionsProvider,
+  redisClientsProvider
+} from './redis.providers';
+import { RedisService } from './redis.service';
+import { logger } from './redis-logger.js';
 
 @Module({})
 export class RedisModule implements OnApplicationShutdown {
@@ -35,10 +36,10 @@ export class RedisModule implements OnApplicationShutdown {
     ];
 
     return {
+      exports: [RedisService],
       global: isGlobal,
       module: RedisModule,
-      providers,
-      exports: [RedisService]
+      providers
     };
   }
 
@@ -63,18 +64,20 @@ export class RedisModule implements OnApplicationShutdown {
     ];
 
     return {
+      exports: [RedisService],
       global: isGlobal,
-      module: RedisModule,
       imports: options.imports,
-      providers,
-      exports: [RedisService]
+      module: RedisModule,
+      providers
     };
   }
 
   async onApplicationShutdown() {
     const { closeClient } = this.moduleRef.get<RedisModuleOptions>(REDIS_MERGED_OPTIONS, { strict: false });
+
     if (!closeClient) return;
     const clients = this.moduleRef.get<RedisClients>(REDIS_CLIENTS, { strict: false });
+
     for (const [namespace, client] of clients) {
       try {
         if (client.status === 'end') continue;

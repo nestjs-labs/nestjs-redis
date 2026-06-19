@@ -1,4 +1,4 @@
-import * as allExports from '.';
+import * as allExports from './index.js';
 
 test('there should be 6 exports', () => {
   expect(Object.keys(allExports)).toHaveLength(6);

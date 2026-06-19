@@ -1,10 +1,12 @@
+import type { Namespace } from '@/interfaces';
+import type { RedisClientOptions, RedisModuleOptions } from '../interfaces';
+
+import { generateErrorMessage, generateReadyMessage } from '@/messages/index.js';
+import { get, isDirectInstanceOf } from '@/utils/index.js';
 import { Redis } from 'ioredis';
-import { RedisClientOptions, RedisModuleOptions } from '../interfaces';
-import { Namespace } from '@/interfaces';
-import { generateErrorMessage, generateReadyMessage } from '@/messages';
-import { logger } from '../redis-logger';
-import { get, isDirectInstanceOf } from '@/utils';
+
 import { DEFAULT_REDIS, NAMESPACE_KEY } from '../redis.constants';
+import { logger } from '../redis-logger.js';
 
 export function readyCallback(this: Redis) {
   logger.log(generateReadyMessage(get<Namespace>(this, NAMESPACE_KEY)));
@@ -20,10 +22,11 @@ export function removeListeners(instance: Redis) {
 }
 
 export const create = (
-  { namespace, url, path, onClientCreated, created, provide, ...redisOptions }: RedisClientOptions,
-  { readyLog, errorLog, beforeCreate }: RedisModuleOptions
+  { created, namespace, onClientCreated, path, provide, url, ...redisOptions }: RedisClientOptions,
+  { beforeCreate, errorLog, readyLog }: RedisModuleOptions
 ): Redis => {
   let client: Redis;
+
   if (beforeCreate) beforeCreate();
   if (provide) client = provide();
   else if (url) client = new Redis(url, redisOptions);
@@ -35,5 +38,6 @@ export const create = (
   if (errorLog) client.on('error', errorCallback);
   if (created) created(client);
   if (onClientCreated) onClientCreated(client);
+
   return client;
 };

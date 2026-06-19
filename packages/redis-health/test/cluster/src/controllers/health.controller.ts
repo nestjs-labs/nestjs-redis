@@ -1,25 +1,27 @@
+import { ClusterService } from '@/index.js';
+import { RedisHealthIndicator } from '@health/index.js';
 import { Controller, Get } from '@nestjs/common';
-import { HealthCheckService, HealthCheckResult } from '@nestjs/terminus';
-import { Cluster } from 'ioredis';
-import { RedisHealthIndicator } from '@health/.';
-import { InjectCluster } from '@/.';
+import { HealthCheckResult, HealthCheckService } from '@nestjs/terminus';
 
 @Controller('health')
 export class HealthController {
   constructor(
-    @InjectCluster() private readonly client0: Cluster,
-    @InjectCluster('client1') private readonly client1: Cluster,
+    private readonly clusterService: ClusterService,
     private readonly health: HealthCheckService,
     private readonly redis: RedisHealthIndicator
   ) {}
 
   @Get()
   async healthCheck(): Promise<HealthCheckResult> {
-    await this.client0.ping();
-    await this.client1.ping();
+    const client0 = this.clusterService.getOrThrow();
+    const client1 = this.clusterService.getOrThrow('client1');
+
+    await client0.ping();
+    await client1.ping();
+
     return await this.health.check([
-      () => this.redis.checkHealth('default', { client: this.client0, type: 'cluster' }),
-      () => this.redis.checkHealth('client1', { client: this.client1, type: 'cluster' })
+      () => this.redis.checkHealth('default', { client: client0, type: 'cluster' }),
+      () => this.redis.checkHealth('client1', { client: client1, type: 'cluster' })
     ]);
   }
 }

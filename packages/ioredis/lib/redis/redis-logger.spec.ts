@@ -1,5 +1,6 @@
 import { Logger } from '@nestjs/common';
-import { logger } from './redis-logger';
+
+import { logger } from './redis-logger.js';
 
 jest.mock('@nestjs/common', () => ({
   Logger: jest.fn()

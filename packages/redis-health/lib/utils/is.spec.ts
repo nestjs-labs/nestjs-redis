@@ -1,4 +1,4 @@
-import { isNullish } from './is';
+import { isNullish } from './is.js';
 
 describe('isNullish', () => {
   test('should work correctly', () => {

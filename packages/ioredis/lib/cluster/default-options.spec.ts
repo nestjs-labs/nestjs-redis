@@ -1,4 +1,4 @@
-import { defaultClusterModuleOptions } from './default-options';
+import { defaultClusterModuleOptions } from './default-options.js';
 
 describe('defaultClusterModuleOptions', () => {
   test('should validate the defaultClusterModuleOptions', () => {

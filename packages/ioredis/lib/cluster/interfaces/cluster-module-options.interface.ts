@@ -1,6 +1,6 @@
-import { Type, ModuleMetadata, Provider, InjectionToken, OptionalFactoryDependency } from '@nestjs/common';
+import type { Namespace } from '@/interfaces';
+import type { InjectionToken, ModuleMetadata, OptionalFactoryDependency, Provider, Type } from '@nestjs/common';
 import type { Cluster, ClusterNode, ClusterOptions } from 'ioredis';
-import { Namespace } from '@/interfaces';
 
 export interface ClusterClientOptions extends ClusterOptions {
   /**

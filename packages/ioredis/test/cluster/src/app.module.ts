@@ -5,6 +5,7 @@ import { InjectController } from './controllers/inject.controller';
 import { ManagerController } from './controllers/manager.controller';
 
 @Module({
+  controllers: [InjectController, ManagerController],
   imports: [
     ClusterModule.forRootAsync({
       useFactory(): ClusterModuleOptions {
@@ -23,7 +24,6 @@ import { ManagerController } from './controllers/manager.controller';
         };
       }
     })
-  ],
-  controllers: [InjectController, ManagerController]
+  ]
 })
 export class AppModule {}

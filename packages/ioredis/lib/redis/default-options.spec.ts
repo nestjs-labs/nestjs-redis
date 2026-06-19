@@ -1,4 +1,4 @@
-import { defaultRedisModuleOptions } from './default-options';
+import { defaultRedisModuleOptions } from './default-options.js';
 
 describe('defaultRedisModuleOptions', () => {
   test('should validate the defaultRedisModuleOptions', () => {
