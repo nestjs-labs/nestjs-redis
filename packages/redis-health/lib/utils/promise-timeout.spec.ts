@@ -1,5 +1,6 @@
-import { promiseTimeout } from './promise-timeout';
 import { OPERATIONS_TIMEOUT } from '@health/messages';
+
+import { promiseTimeout } from './promise-timeout.js';
 
 describe('promiseTimeout', () => {
   beforeEach(() => {
@@ -13,12 +14,14 @@ describe('promiseTimeout', () => {
 
   test('should work correctly', async () => {
     const promise = promiseTimeout(2000, waitPromise(1000));
+
     jest.runAllTimers();
     await expect(promise).resolves.toBe('response');
   });
 
   test('should throw an error', async () => {
     const promise = promiseTimeout(2000, waitPromise(3000));
+
     jest.runAllTimers();
     await expect(promise).rejects.toThrow(OPERATIONS_TIMEOUT(2000));
   });

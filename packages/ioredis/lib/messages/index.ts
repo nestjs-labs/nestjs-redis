@@ -1,5 +1,6 @@
-import { Namespace } from '@/interfaces';
-import { parseNamespace } from '@/utils';
+import type { Namespace } from '@/interfaces';
+
+import { parseNamespace } from '@/utils/index.js';
 
 export const generateReadyMessage = (namespace: Namespace) =>
   `${parseNamespace(namespace)}: the connection was successfully established`;

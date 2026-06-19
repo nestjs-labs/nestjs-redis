@@ -27,7 +27,7 @@
     "prebuild": "rimraf dist",
     "build": "tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json",
     "lint": "concurrently \"npm:lint:es\" \"npm:lint:tsc\"",
-    "lint:es": "eslint \"{lib,test}/**/*.ts\"",
+    "lint:es": "eslint \"{lib,test}/**/*.ts\" --fix",
     "lint:tsc": "tsc -p tsconfig.json --noEmit",
     "test": "jest",
     "test:watch": "jest --watch",

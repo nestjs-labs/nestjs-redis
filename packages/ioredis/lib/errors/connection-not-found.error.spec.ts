@@ -1,19 +1,11 @@
-import { ClientNotFoundError } from './client-not-found.error';
+import { ConnectionNotFoundError } from './connection-not-found.error.js';
 
-describe('ClientNotFoundError', () => {
-  test('should create an instance for redis', () => {
-    const error = new ClientNotFoundError('name', 'redis');
-    expect(error.name).toBe(ClientNotFoundError.name);
-    expect(error.message).toContain('name');
-    expect(error.message).toContain('redis');
-    expect(error.stack).toBeDefined();
-  });
+describe('ConnectionNotFoundError', () => {
+  test('should create an instance', () => {
+    const error = new ConnectionNotFoundError('name');
 
-  test('should create an instance for cluster', () => {
-    const error = new ClientNotFoundError('name', 'cluster');
-    expect(error.name).toBe(ClientNotFoundError.name);
-    expect(error.message).toContain('name');
-    expect(error.message).toContain('cluster');
+    expect(error.name).toBe(ConnectionNotFoundError.name);
+    expect(error.message).toBe('Connection "name" was not found.');
     expect(error.stack).toBeDefined();
   });
 });

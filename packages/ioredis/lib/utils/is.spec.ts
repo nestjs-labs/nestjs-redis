@@ -1,4 +1,4 @@
-import { isString, isError } from './is';
+import { isError, isString } from './is.js';
 
 describe('isString', () => {
   test('should work correctly', () => {

@@ -1,5 +1,6 @@
-import { isString } from './is';
-import { Namespace } from '@/interfaces';
+import type { Namespace } from '@/interfaces';
+
+import { isString } from './is.js';
 
 /**
  * Parses namespace to string.

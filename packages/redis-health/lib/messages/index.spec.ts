@@ -1,4 +1,4 @@
-import * as allExports from '.';
+import * as allExports from './index.js';
 
 const { OPERATIONS_TIMEOUT, ...messages } = allExports;
 
@@ -10,5 +10,5 @@ describe('OPERATIONS_TIMEOUT', () => {
 });
 
 test('should be a string', () => {
-  Object.values(messages).forEach((value) => expect(typeof value).toBe('string'));
+  Object.values(messages).forEach(value => expect(typeof value).toBe('string'));
 });

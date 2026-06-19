@@ -8,8 +8,11 @@
   },
   "verbose": true,
   "moduleNameMapper": {
-    "@/(.*)": ["<rootDir>/../../redis/lib/$1"],
-    "@health/(.*)": ["<rootDir>/../lib/$1"]
+    "^(\\.{1,2}/.*)\\.js$": "$1",
+    "^@/(.*)\\.js$": "<rootDir>/../../ioredis/lib/$1",
+    "^@/(.*)$": "<rootDir>/../../ioredis/lib/$1",
+    "^@health/(.*)\\.js$": "<rootDir>/../lib/$1",
+    "^@health/(.*)$": "<rootDir>/../lib/$1"
   },
   "setupFilesAfterEnv": ["jest-extended/all"]
 }

@@ -1,8 +1,14 @@
-import { Provider, FactoryProvider, ValueProvider } from '@nestjs/common';
-import { ClusterModuleOptions, ClusterModuleAsyncOptions, ClusterOptionsFactory, ClusterClients } from './interfaces';
-import { CLUSTER_OPTIONS, CLUSTER_CLIENTS, DEFAULT_CLUSTER, CLUSTER_MERGED_OPTIONS } from './cluster.constants';
-import { createClient } from './common';
-import { defaultClusterModuleOptions } from './default-options';
+import type { FactoryProvider, Provider, ValueProvider } from '@nestjs/common';
+import type {
+  ClusterClients,
+  ClusterModuleAsyncOptions,
+  ClusterModuleOptions,
+  ClusterOptionsFactory
+} from './interfaces';
+
+import { createClient } from './common/index.js';
+import { CLUSTER_CLIENTS, CLUSTER_MERGED_OPTIONS, CLUSTER_OPTIONS, DEFAULT_CLUSTER } from './cluster.constants';
+import { defaultClusterModuleOptions } from './default-options.js';
 
 export const createOptionsProvider = (options: ClusterModuleOptions): ValueProvider<ClusterModuleOptions> => ({
   provide: CLUSTER_OPTIONS,
@@ -32,25 +38,25 @@ export const createAsyncOptions = async (optionsFactory: ClusterOptionsFactory):
 export const createAsyncOptionsProvider = (options: ClusterModuleAsyncOptions): Provider => {
   if (options.useFactory) {
     return {
+      inject: options.inject,
       provide: CLUSTER_OPTIONS,
-      useFactory: options.useFactory,
-      inject: options.inject
+      useFactory: options.useFactory
     };
   }
 
   if (options.useClass) {
     return {
+      inject: [options.useClass],
       provide: CLUSTER_OPTIONS,
-      useFactory: createAsyncOptions,
-      inject: [options.useClass]
+      useFactory: createAsyncOptions
     };
   }
 
   if (options.useExisting) {
     return {
+      inject: [options.useExisting],
       provide: CLUSTER_OPTIONS,
-      useFactory: createAsyncOptions,
-      inject: [options.useExisting]
+      useFactory: createAsyncOptions
     };
   }
 
@@ -61,29 +67,31 @@ export const createAsyncOptionsProvider = (options: ClusterModuleAsyncOptions): 
 };
 
 export const clusterClientsProvider: FactoryProvider<ClusterClients> = {
+  inject: [CLUSTER_MERGED_OPTIONS],
   provide: CLUSTER_CLIENTS,
   useFactory: (options: ClusterModuleOptions) => {
     const clients: ClusterClients = new Map();
+
     if (Array.isArray(options.config)) {
       options.config.forEach(item =>
         clients.set(
           item.namespace ?? DEFAULT_CLUSTER,
-          createClient(item, { readyLog: options.readyLog, errorLog: options.errorLog })
+          createClient(item, { errorLog: options.errorLog, readyLog: options.readyLog })
         )
       );
     } else if (options.config) {
       clients.set(
         options.config.namespace ?? DEFAULT_CLUSTER,
-        createClient(options.config, { readyLog: options.readyLog, errorLog: options.errorLog })
+        createClient(options.config, { errorLog: options.errorLog, readyLog: options.readyLog })
       );
     }
+
     return clients;
-  },
-  inject: [CLUSTER_MERGED_OPTIONS]
+  }
 };
 
 export const mergedOptionsProvider: FactoryProvider<ClusterModuleOptions> = {
+  inject: [CLUSTER_OPTIONS],
   provide: CLUSTER_MERGED_OPTIONS,
-  useFactory: (options: ClusterModuleOptions) => ({ ...defaultClusterModuleOptions, ...options }),
-  inject: [CLUSTER_OPTIONS]
+  useFactory: (options: ClusterModuleOptions) => ({ ...defaultClusterModuleOptions, ...options })
 };

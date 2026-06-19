@@ -1,10 +1,12 @@
-import { Injectable, Inject } from '@nestjs/common';
-import type { Redis } from 'ioredis';
-import { REDIS_CLIENTS, DEFAULT_REDIS } from './redis.constants';
-import type { RedisClients } from './interfaces';
-import { parseNamespace } from '@/utils';
 import type { Namespace } from '@/interfaces';
-import { ConnectionNotFoundError } from '@/errors';
+import type { Redis } from 'ioredis';
+import type { RedisClients } from './interfaces';
+
+import { ConnectionNotFoundError } from '@/errors/index.js';
+import { parseNamespace } from '@/utils/index.js';
+import { Inject, Injectable } from '@nestjs/common';
+
+import { DEFAULT_REDIS, REDIS_CLIENTS } from './redis.constants';
 
 /**
  * The redis connections manager.
@@ -22,7 +24,9 @@ export class RedisService {
    */
   getOrThrow(namespace: Namespace = DEFAULT_REDIS): Redis {
     const client = this.clients.get(namespace);
+
     if (!client) throw new ConnectionNotFoundError(parseNamespace(namespace));
+
     return client;
   }
 
@@ -34,7 +38,9 @@ export class RedisService {
    */
   getOrNil(namespace: Namespace = DEFAULT_REDIS): Redis | null {
     const client = this.clients.get(namespace);
+
     if (!client) return null;
+
     return client;
   }
 }

@@ -1,10 +1,12 @@
-import { Injectable, Inject } from '@nestjs/common';
-import type { Cluster } from 'ioredis';
-import { CLUSTER_CLIENTS, DEFAULT_CLUSTER } from './cluster.constants';
-import type { ClusterClients } from './interfaces';
-import { parseNamespace } from '@/utils';
 import type { Namespace } from '@/interfaces';
-import { ConnectionNotFoundError } from '@/errors';
+import type { Cluster } from 'ioredis';
+import type { ClusterClients } from './interfaces';
+
+import { ConnectionNotFoundError } from '@/errors/index.js';
+import { parseNamespace } from '@/utils/index.js';
+import { Inject, Injectable } from '@nestjs/common';
+
+import { CLUSTER_CLIENTS, DEFAULT_CLUSTER } from './cluster.constants';
 
 /**
  * Manager for cluster connections.
@@ -22,7 +24,9 @@ export class ClusterService {
    */
   getOrThrow(namespace: Namespace = DEFAULT_CLUSTER): Cluster {
     const client = this.clients.get(namespace);
+
     if (!client) throw new ConnectionNotFoundError(parseNamespace(namespace));
+
     return client;
   }
 
@@ -34,7 +38,9 @@ export class ClusterService {
    */
   getOrNil(namespace: Namespace = DEFAULT_CLUSTER): Cluster | null {
     const client = this.clients.get(namespace);
+
     if (!client) return null;
+
     return client;
   }
 }

@@ -1,3 +1,3 @@
-export * from './is';
-export * from './parsers';
-export * from './promise-timeout';
+export * from './is.js';
+export * from './parsers.js';
+export * from './promise-timeout.js';

@@ -1,47 +1,46 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import type { RedisClients } from './interfaces/index.js';
+
+import { Test, type TestingModule } from '@nestjs/testing';
 import Redis from 'ioredis';
-import { RedisManager } from './redis-manager';
-import { RedisClients } from './interfaces';
-import { REDIS_CLIENTS, DEFAULT_REDIS_NAMESPACE } from './redis.constants';
+
+import { DEFAULT_REDIS, REDIS_CLIENTS } from './redis.constants.js';
+import { RedisService } from './redis.service.js';
 
 jest.mock('ioredis', () => jest.fn(() => ({})));
 
-describe('RedisManager', () => {
+describe('RedisService', () => {
   let clients: RedisClients;
-  let manager: RedisManager;
+  let service: RedisService;
 
   beforeEach(async () => {
     clients = new Map();
-    clients.set(DEFAULT_REDIS_NAMESPACE, new Redis());
+    clients.set(DEFAULT_REDIS, new Redis());
     clients.set('client1', new Redis());
 
     const module: TestingModule = await Test.createTestingModule({
-      providers: [{ provide: REDIS_CLIENTS, useValue: clients }, RedisManager]
+      providers: [{ provide: REDIS_CLIENTS, useValue: clients }, RedisService]
     }).compile();
 
-    manager = module.get<RedisManager>(RedisManager);
-  });
-
-  test('should have 2 members', () => {
-    expect(manager.clients.size).toBe(2);
+    service = module.get<RedisService>(RedisService);
   });
 
   test('should get a client with namespace', () => {
-    const client = manager.getClient('client1');
-    expect(client).toBeDefined();
+    expect(service.getOrThrow('client1')).toBeDefined();
   });
 
   test('should get default client with namespace', () => {
-    const client = manager.getClient(DEFAULT_REDIS_NAMESPACE);
-    expect(client).toBeDefined();
+    expect(service.getOrThrow(DEFAULT_REDIS)).toBeDefined();
   });
 
   test('should get default client without namespace', () => {
-    const client = manager.getClient();
-    expect(client).toBeDefined();
+    expect(service.getOrThrow()).toBeDefined();
+  });
+
+  test('should return null for unknown namespace', () => {
+    expect(service.getOrNil('')).toBeNull();
   });
 
   test('should throw an error when getting a client with an unknown namespace', () => {
-    expect(() => manager.getClient('')).toThrow();
+    expect(() => service.getOrThrow('')).toThrow();
   });
 });

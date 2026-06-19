@@ -1,8 +1,8 @@
-import { ClusterModuleOptions } from './interfaces';
+import type { ClusterModuleOptions } from './interfaces';
 
 export const defaultClusterModuleOptions: Partial<ClusterModuleOptions> = {
   closeClient: true,
-  readyLog: false,
+  config: undefined,
   errorLog: true,
-  config: undefined
+  readyLog: false
 };

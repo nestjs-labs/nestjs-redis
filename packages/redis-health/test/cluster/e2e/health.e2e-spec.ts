@@ -1,5 +1,9 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { NestFastifyApplication, FastifyAdapter } from '@nestjs/platform-fastify';
+import type { NestFastifyApplication } from '@nestjs/platform-fastify';
+import type { TestingModule } from '@nestjs/testing';
+
+import { FastifyAdapter } from '@nestjs/platform-fastify';
+import { Test } from '@nestjs/testing';
+
 import { AppModule } from '../src/app.module';
 
 describe('HealthController (e2e)', () => {
@@ -9,6 +13,7 @@ describe('HealthController (e2e)', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [AppModule]
     }).compile();
+
     app = module.createNestApplication<NestFastifyApplication>(new FastifyAdapter());
     await app.init();
     await app.getHttpAdapter().getInstance().ready();
@@ -20,26 +25,27 @@ describe('HealthController (e2e)', () => {
 
   test('/health (GET)', async () => {
     const res = await app.inject({ method: 'GET', url: '/health' });
+
     expect(res.statusCode).toBe(200);
     expect(JSON.parse(res.payload)).toEqual({
-      status: 'ok',
-      info: {
-        default: {
+      details: {
+        client1: {
           status: 'up'
         },
-        client1: {
+        default: {
           status: 'up'
         }
       },
       error: {},
-      details: {
-        default: {
-          status: 'up'
-        },
+      info: {
         client1: {
           status: 'up'
+        },
+        default: {
+          status: 'up'
         }
-      }
+      },
+      status: 'ok'
     });
   });
 });
