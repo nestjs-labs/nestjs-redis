@@ -5,14 +5,14 @@ import { DynamicModule, Module, OnApplicationShutdown, Provider } from '@nestjs/
 import { ModuleRef } from '@nestjs/core';
 
 import { ClusterClients, ClusterModuleAsyncOptions, ClusterModuleOptions } from './interfaces/index.js';
-import { CLUSTER_CLIENTS, CLUSTER_MERGED_OPTIONS } from './cluster.constants';
+import { CLUSTER_CLIENTS, CLUSTER_MERGED_OPTIONS } from './cluster.constants.js';
 import {
   clusterClientsProvider,
   createAsyncProviders,
   createOptionsProvider,
   mergedOptionsProvider
-} from './cluster.providers';
-import { ClusterService } from './cluster.service';
+} from './cluster.providers.js';
+import { ClusterService } from './cluster.service.js';
 import { logger } from './cluster-logger.js';
 
 @Module({})
