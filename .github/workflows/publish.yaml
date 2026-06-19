@@ -15,6 +15,8 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
@@ -24,9 +26,44 @@ jobs:
         with:
           node-version: 24
           registry-url: 'https://registry.npmjs.org'
+      - name: Detect workspace changes
+        id: changes
+        uses: dorny/paths-filter@v4
+        with:
+          filters: |
+            node_redis:
+              - 'packages/node-redis/**'
+            ioredis:
+              - 'packages/ioredis/**'
+            redis_health:
+              - 'packages/redis-health/**'
+            example:
+              - 'examples/nest-redis-example/**'
       - run: pnpm install --frozen-lockfile
-      - run: pnpm -r --filter "./packages/*" run lint
-      - run: pnpm -r --filter "./packages/*" run build
+      - name: Lint node-redis
+        if: steps.changes.outputs.node_redis == 'true'
+        run: pnpm -F "@nestjs-labs/nestjs-redis" run lint
+      - name: Build node-redis
+        if: steps.changes.outputs.node_redis == 'true'
+        run: pnpm -F "@nestjs-labs/nestjs-redis" run build
+      - name: Lint ioredis
+        if: steps.changes.outputs.ioredis == 'true'
+        run: pnpm -F "@nestjs-labs/nestjs-ioredis" run lint
+      - name: Build ioredis
+        if: steps.changes.outputs.ioredis == 'true'
+        run: pnpm -F "@nestjs-labs/nestjs-ioredis" run build
+      - name: Lint redis-health
+        if: steps.changes.outputs.redis_health == 'true'
+        run: pnpm -F "@nestjs-labs/nestjs-redis-health" run lint
+      - name: Build redis-health
+        if: steps.changes.outputs.redis_health == 'true'
+        run: pnpm -F "@nestjs-labs/nestjs-redis-health" run build
+      - name: Lint example
+        if: steps.changes.outputs.example == 'true'
+        run: pnpm -F "nest-redis-example" run lint
+      - name: Build example
+        if: steps.changes.outputs.example == 'true'
+        run: pnpm -F "nest-redis-example" run build
       - name: Create release pull request or publish
         uses: changesets/action@v1
         with:
