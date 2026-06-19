@@ -3,33 +3,107 @@ on:
   pull_request:
     branches:
       - main
+permissions:
+  contents: read
+  pull-requests: read
 jobs:
   test:
     name: Node.js 24
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Detect workspace changes
+        id: changes
+        uses: dorny/paths-filter@v4
+        with:
+          filters: |
+            any_workspace:
+              - 'packages/node-redis/**'
+              - 'packages/ioredis/**'
+              - 'packages/redis-health/**'
+              - 'examples/nest-redis-example/**'
+            node_redis:
+              - 'packages/node-redis/**'
+            ioredis:
+              - 'packages/ioredis/**'
+            redis_health:
+              - 'packages/redis-health/**'
+            example:
+              - 'examples/nest-redis-example/**'
       - name: Setup pnpm
+        if: steps.changes.outputs.any_workspace == 'true'
         uses: pnpm/action-setup@v4
         with:
           version: 11.0.8
       - name: Setup node
+        if: steps.changes.outputs.any_workspace == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: 24
           cache: 'pnpm'
       - name: Cache Docker images
+        if: steps.changes.outputs.any_workspace == 'true'
         uses: ScribeMD/docker-cache@0.5.0
         with:
           key: docker-${{ runner.os }}-${{ hashFiles('compose.yaml') }}
       - name: Run docker-compose
+        if: steps.changes.outputs.any_workspace == 'true'
         uses: hoverkraft-tech/compose-action@v2.0.2
         with:
           compose-file: './compose.yaml'
           compose-flags: '--profile cluster'
           up-flags: '-d'
           down-flags: '-v'
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm -F "@nestjs-labs/nestjs-redis" run lint
-      - run: pnpm -F "@nestjs-labs/nestjs-redis" run test
-      - run: pnpm -F "@nestjs-labs/nestjs-redis" run test:e2e
+      - name: Install dependencies
+        if: steps.changes.outputs.any_workspace == 'true'
+        run: pnpm install --frozen-lockfile
+      - name: Lint node-redis
+        if: steps.changes.outputs.node_redis == 'true'
+        run: pnpm -F "@nestjs-labs/nestjs-redis" run lint
+      - name: Test node-redis
+        if: steps.changes.outputs.node_redis == 'true'
+        run: pnpm -F "@nestjs-labs/nestjs-redis" run test
+      - name: Build node-redis
+        if: steps.changes.outputs.node_redis == 'true'
+        run: pnpm -F "@nestjs-labs/nestjs-redis" run build
+      - name: E2E node-redis
+        if: steps.changes.outputs.node_redis == 'true'
+        run: pnpm -F "@nestjs-labs/nestjs-redis" run test:e2e
+      - name: Lint ioredis
+        if: steps.changes.outputs.ioredis == 'true'
+        run: pnpm -F "@nestjs-labs/nestjs-ioredis" run lint
+      - name: Test ioredis
+        if: steps.changes.outputs.ioredis == 'true'
+        run: pnpm -F "@nestjs-labs/nestjs-ioredis" run test
+      - name: Build ioredis
+        if: steps.changes.outputs.ioredis == 'true'
+        run: pnpm -F "@nestjs-labs/nestjs-ioredis" run build
+      - name: E2E ioredis
+        if: steps.changes.outputs.ioredis == 'true'
+        run: pnpm -F "@nestjs-labs/nestjs-ioredis" run test:e2e
+      - name: Lint redis-health
+        if: steps.changes.outputs.redis_health == 'true'
+        run: pnpm -F "@nestjs-labs/nestjs-redis-health" run lint
+      - name: Test redis-health
+        if: steps.changes.outputs.redis_health == 'true'
+        run: pnpm -F "@nestjs-labs/nestjs-redis-health" run test
+      - name: Build redis-health
+        if: steps.changes.outputs.redis_health == 'true'
+        run: pnpm -F "@nestjs-labs/nestjs-redis-health" run build
+      - name: E2E redis-health
+        if: steps.changes.outputs.redis_health == 'true'
+        run: pnpm -F "@nestjs-labs/nestjs-redis-health" run test:e2e
+      - name: Lint example
+        if: steps.changes.outputs.example == 'true'
+        run: pnpm -F "nest-redis-example" run lint
+      - name: Test example
+        if: steps.changes.outputs.example == 'true'
+        run: pnpm -F "nest-redis-example" run test
+      - name: Build example
+        if: steps.changes.outputs.example == 'true'
+        run: pnpm -F "nest-redis-example" run build
+      - name: E2E example
+        if: steps.changes.outputs.example == 'true'
+        run: pnpm -F "nest-redis-example" run test:e2e
