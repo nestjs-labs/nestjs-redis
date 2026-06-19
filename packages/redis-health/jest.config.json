@@ -11,8 +11,11 @@
   "verbose": true,
   "coveragePathIgnorePatterns": ["/node_modules/", "/interfaces/"],
   "moduleNameMapper": {
-    "@/(.*)": ["<rootDir>/../../redis/lib/$1"],
-    "@health/(.*)": ["<rootDir>/$1"]
+    "^(\\.{1,2}/.*)\\.js$": "$1",
+    "^@/(.*)\\.js$": "<rootDir>/../ioredis/lib/$1",
+    "^@/(.*)$": "<rootDir>/../ioredis/lib/$1",
+    "^@health/(.*)\\.js$": "<rootDir>/$1",
+    "^@health/(.*)$": "<rootDir>/$1"
   },
   "setupFilesAfterEnv": ["jest-extended/all"],
   "coverageReporters": ["json-summary"]

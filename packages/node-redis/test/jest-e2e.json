@@ -8,8 +8,9 @@
   },
   "verbose": true,
   "moduleNameMapper": {
-    "^@/(.*)\\.js$": ["<rootDir>/../lib/$1.ts"],
-    "^@/(.*)$": ["<rootDir>/../lib/$1"]
+    "^(\\.{1,2}/.*)\\.js$": "$1",
+    "^@/(.*)\\.js$": "<rootDir>/../lib/$1",
+    "^@/(.*)$": "<rootDir>/../lib/$1"
   },
   "setupFilesAfterEnv": ["jest-extended/all"]
 }

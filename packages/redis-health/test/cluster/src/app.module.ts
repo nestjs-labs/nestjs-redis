@@ -13,13 +13,11 @@ import { HealthController } from './controllers/health.controller';
         return {
           config: [
             {
-              nodes: [{ host: '127.0.0.1', port: 16380 }],
-              redisOptions: { password: 'cluster1' }
+              nodes: [{ host: '127.0.0.1', port: 16379 }]
             },
             {
               namespace: 'client1',
-              nodes: [{ host: '127.0.0.1', port: 16480 }],
-              redisOptions: { password: 'cluster2' }
+              nodes: [{ host: '127.0.0.1', port: 16379 }]
             }
           ]
         };

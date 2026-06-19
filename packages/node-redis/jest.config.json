@@ -11,7 +11,9 @@
   "verbose": true,
   "coveragePathIgnorePatterns": ["/node_modules/", "/interfaces/"],
   "moduleNameMapper": {
-    "@/(.*)": ["<rootDir>/$1"]
+    "^(\\.{1,2}/.*)\\.js$": "$1",
+    "^@/(.*)\\.js$": "<rootDir>/$1",
+    "^@/(.*)$": "<rootDir>/$1"
   },
   "setupFilesAfterEnv": ["jest-extended/all"],
   "coverageReporters": ["json-summary"]
