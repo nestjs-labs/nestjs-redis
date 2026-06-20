@@ -71,6 +71,18 @@ jobs:
       - name: E2E node-redis
         if: steps.changes.outputs.node_redis == 'true'
         run: pnpm -F "@nestjs-labs/nestjs-redis" run test:e2e
+      - name: Install redis 6 for node-redis compatibility
+        if: steps.changes.outputs.node_redis == 'true'
+        run: pnpm -F "@nestjs-labs/nestjs-redis" add redis@^6.0.0 --save-dev
+      - name: Test node-redis with redis 6
+        if: steps.changes.outputs.node_redis == 'true'
+        run: pnpm -F "@nestjs-labs/nestjs-redis" run test
+      - name: Build node-redis with redis 6
+        if: steps.changes.outputs.node_redis == 'true'
+        run: pnpm -F "@nestjs-labs/nestjs-redis" run build
+      - name: E2E node-redis with redis 6
+        if: steps.changes.outputs.node_redis == 'true'
+        run: pnpm -F "@nestjs-labs/nestjs-redis" run test:e2e
       - name: Lint ioredis
         if: steps.changes.outputs.ioredis == 'true'
         run: pnpm -F "@nestjs-labs/nestjs-ioredis" run lint
