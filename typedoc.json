@@ -6,6 +6,6 @@
   "entryPointStrategy": "packages",
   "sort": ["source-order"],
   "searchInComments": true,
-  "includeVersion": true,
+  "includeVersion": false,
   "readme": "README.md"
 }
