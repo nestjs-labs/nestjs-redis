@@ -49,7 +49,7 @@ export class RedisService<
       }
 
       // ping the client
-      const client = this.client as RedisClientType;
+      const client = this.client as unknown as RedisClientType;
       const result = await client.ping();
 
       if (result === 'PONG') {

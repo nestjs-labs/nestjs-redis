@@ -1,3 +1,10 @@
+[![NPM][npm-shield]][npm-url]
+[![Downloads][downloads-shield]][downloads-url]
+[![Stargazers][stars-shield]][stars-url]
+[![Issues][issues-shield]][issues-url]
+[![Vulnerabilities][vulnerabilities-shield]][vulnerabilities-url]
+[![License][license-shield]][license-url]
+
 # @nestjs-labs/nestjs-redis
 
 Redis(node-redis) module for Nest framework (node.js).
@@ -165,3 +172,16 @@ export class HealthService {
   }
 }
 ```
+
+[npm-shield]: https://img.shields.io/npm/v/%40nestjs-labs%2Fnestjs-redis?style=for-the-badge
+[npm-url]: https://www.npmjs.com/package/@nestjs-labs/nestjs-redis
+[downloads-shield]: https://img.shields.io/npm/dm/%40nestjs-labs%2Fnestjs-redis?style=for-the-badge
+[downloads-url]: https://www.npmjs.com/package/@nestjs-labs/nestjs-redis
+[stars-shield]: https://img.shields.io/github/stars/nestjs-labs/nestjs-redis?style=for-the-badge
+[stars-url]: https://github.com/nestjs-labs/nestjs-redis/stargazers
+[issues-shield]: https://img.shields.io/github/issues/nestjs-labs/nestjs-redis?style=for-the-badge
+[issues-url]: https://github.com/nestjs-labs/nestjs-redis/issues
+[vulnerabilities-shield]: https://snyk.io/test/npm/@nestjs-labs/nestjs-redis/badge.svg
+[vulnerabilities-url]: https://snyk.io/test/npm/@nestjs-labs/nestjs-redis
+[license-shield]: https://img.shields.io/npm/l/%40nestjs-labs%2Fnestjs-redis?style=for-the-badge
+[license-url]: https://github.com/nestjs-labs/nestjs-redis/blob/main/LICENSE
