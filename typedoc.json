@@ -4,8 +4,17 @@
   "exclude": ["**/node_modules/**", "**/test/**"],
   "name": "Nestjs Redis Packages",
   "entryPointStrategy": "packages",
+  "packageOptions": {
+    "entryPoints": ["lib/index.ts"],
+    "validation": {
+      "notExported": false
+    }
+  },
   "sort": ["source-order"],
   "searchInComments": true,
-  "includeVersion": true,
+  "includeVersion": false,
+  "navigationLinks": {
+    "Examples": "https://github.com/nestjs-labs/nestjs-redis/tree/main/examples"
+  },
   "readme": "README.md"
 }

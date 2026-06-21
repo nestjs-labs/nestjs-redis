@@ -1,6 +1,6 @@
 {
   "name": "@nestjs-labs/nestjs-monorepo",
-  "version": "10",
+  "version": "11",
   "packageManager": "pnpm@11.0.8",
   "description": "Redis module for Nest framework (node.js).",
   "author": "LiaoLiao <yxiaosong002@gmail.com>",

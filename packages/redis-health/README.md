@@ -2,7 +2,7 @@
 [![Downloads][downloads-shield]][downloads-url]
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
-![Vulnerabilities][vulnerabilities-shield]
+[![Vulnerabilities][vulnerabilities-shield]][vulnerabilities-url]
 [![License][license-shield]][license-url]
 
 <p align="center">
@@ -46,7 +46,6 @@
     <li><a href="#usage">Usage</a></li>
     <li><a href="#settings">Settings</a></li>
     <li><a href="#license">License</a></li>
-    <li><a href="./dependency-graph.svg">Package dependency overview</a></li>
   </ol>
 </details>
 
@@ -181,4 +180,5 @@ Distributed under the MIT License. See `LICENSE` for more information.
 [issues-url]: https://github.com/nestjs-labs/nestjs-redis/issues
 [license-shield]: https://img.shields.io/npm/l/@nestjs-labs/nestjs-redis?style=for-the-badge
 [license-url]: https://github.com/nestjs-labs/nestjs-redis/blob/main/LICENSE
-[vulnerabilities-shield]: https://img.shields.io/snyk/vulnerabilities/npm/@nestjs-labs/nestjs-redis-health?style=for-the-badge
+[vulnerabilities-shield]: https://snyk.io/test/npm/@nestjs-labs/nestjs-redis-health/badge.svg
+[vulnerabilities-url]: https://snyk.io/test/npm/@nestjs-labs/nestjs-redis-health
