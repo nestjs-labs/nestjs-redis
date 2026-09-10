@@ -58,6 +58,11 @@ jobs:
       - name: Build redis-health
         if: steps.changes.outputs.redis_health == 'true'
         run: pnpm -F "@nestjs-labs/nestjs-redis-health" run build
+      - name: Build example dependencies
+        if: steps.changes.outputs.example == 'true'
+        run: |
+          pnpm -F "@nestjs-labs/nestjs-redis" run build
+          pnpm -F "@nestjs-labs/nestjs-redis-health" run build
       - name: Lint example
         if: steps.changes.outputs.example == 'true'
         run: pnpm -F "nest-redis-example" run lint
