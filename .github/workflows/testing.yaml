@@ -53,7 +53,7 @@ jobs:
         uses: hoverkraft-tech/compose-action@v2.0.2
         with:
           compose-file: './compose.yaml'
-          compose-flags: '--profile cluster'
+          compose-flags: '--profile standalone --profile cluster'
           up-flags: '-d'
           down-flags: '-v'
       - name: Install dependencies
