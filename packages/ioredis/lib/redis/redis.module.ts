@@ -1,7 +1,7 @@
 import { MissingConfigurationsError } from '@/errors/index.js';
 import { generateErrorMessage } from '@/messages/index.js';
 import { isError } from '@/utils/index.js';
-import { DynamicModule, Module, OnApplicationShutdown, Provider } from '@nestjs/common';
+import { DynamicModule, Inject, Module, OnApplicationShutdown, Provider } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 
 import { removeListeners } from './common/index.js';
@@ -18,7 +18,7 @@ import { logger } from './redis-logger.js';
 
 @Module({})
 export class RedisModule implements OnApplicationShutdown {
-  constructor(private moduleRef: ModuleRef) {}
+  constructor(@Inject(ModuleRef) private moduleRef: ModuleRef) {}
 
   /**
    * Registers the module synchronously.

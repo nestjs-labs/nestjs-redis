@@ -1,7 +1,7 @@
 import { MissingConfigurationsError } from '@/errors/index.js';
 import { generateErrorMessage } from '@/messages/index.js';
 import { isError } from '@/utils/index.js';
-import { DynamicModule, Module, OnApplicationShutdown, Provider } from '@nestjs/common';
+import { DynamicModule, Inject, Module, OnApplicationShutdown, Provider } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 
 import { ClusterClients, ClusterModuleAsyncOptions, ClusterModuleOptions } from './interfaces/index.js';
@@ -17,7 +17,7 @@ import { logger } from './cluster-logger.js';
 
 @Module({})
 export class ClusterModule implements OnApplicationShutdown {
-  constructor(private moduleRef: ModuleRef) {}
+  constructor(@Inject(ModuleRef) private moduleRef: ModuleRef) {}
 
   /**
    * Registers the module synchronously.
