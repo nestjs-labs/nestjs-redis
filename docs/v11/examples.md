@@ -17,7 +17,7 @@
 ```ts
 // app.module.ts
 import { Module } from '@nestjs/common';
-import { RedisModule } from '@nestjs-labs/nestjs-ioredis';
+import { RedisModule } from '@liaoliaots/nestjs-redis';
 
 @Module({
   imports: [
