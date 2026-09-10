@@ -1,12 +1,7 @@
 import { MissingConfigurationsError } from '@/errors/index.js';
-import { generateErrorMessage } from '@/messages/index.js';
-import { isError } from '@/utils/index.js';
-import { DynamicModule, Inject, Module, OnApplicationShutdown, Provider } from '@nestjs/common';
-import { ModuleRef } from '@nestjs/core';
+import { DynamicModule, Module, Provider } from '@nestjs/common';
 
-import { removeListeners } from './common/index.js';
-import { RedisClients, RedisModuleAsyncOptions, RedisModuleOptions } from './interfaces/index.js';
-import { REDIS_CLIENTS, REDIS_MERGED_OPTIONS } from './redis.constants';
+import { RedisModuleAsyncOptions, RedisModuleOptions } from './interfaces/index.js';
 import {
   createAsyncProviders,
   createOptionsProvider,
@@ -14,12 +9,10 @@ import {
   redisClientsProvider
 } from './redis.providers';
 import { RedisService } from './redis.service';
-import { logger } from './redis-logger.js';
+import { RedisCleanupProvider } from './redis-cleanup.provider';
 
 @Module({})
-export class RedisModule implements OnApplicationShutdown {
-  constructor(@Inject(ModuleRef) private moduleRef: ModuleRef) {}
-
+export class RedisModule {
   /**
    * Registers the module synchronously.
    *
@@ -32,7 +25,8 @@ export class RedisModule implements OnApplicationShutdown {
       createOptionsProvider(options),
       redisClientsProvider,
       mergedOptionsProvider,
-      RedisService
+      RedisService,
+      RedisCleanupProvider
     ];
 
     return {
@@ -60,6 +54,7 @@ export class RedisModule implements OnApplicationShutdown {
       redisClientsProvider,
       mergedOptionsProvider,
       RedisService,
+      RedisCleanupProvider,
       ...(options.extraProviders ?? [])
     ];
 
@@ -70,23 +65,5 @@ export class RedisModule implements OnApplicationShutdown {
       module: RedisModule,
       providers
     };
-  }
-
-  async onApplicationShutdown() {
-    const { closeClient } = this.moduleRef.get<RedisModuleOptions>(REDIS_MERGED_OPTIONS, { strict: false });
-
-    if (!closeClient) return;
-    const clients = this.moduleRef.get<RedisClients>(REDIS_CLIENTS, { strict: false });
-
-    for (const [namespace, client] of clients) {
-      try {
-        if (client.status === 'end') continue;
-        await client.quit();
-      } catch (e) {
-        if (isError(e)) logger.error(generateErrorMessage(namespace, e.message), e.stack);
-      } finally {
-        removeListeners(client);
-      }
-    }
   }
 }

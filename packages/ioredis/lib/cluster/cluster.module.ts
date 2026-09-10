@@ -1,11 +1,7 @@
 import { MissingConfigurationsError } from '@/errors/index.js';
-import { generateErrorMessage } from '@/messages/index.js';
-import { isError } from '@/utils/index.js';
-import { DynamicModule, Inject, Module, OnApplicationShutdown, Provider } from '@nestjs/common';
-import { ModuleRef } from '@nestjs/core';
+import { DynamicModule, Module, Provider } from '@nestjs/common';
 
-import { ClusterClients, ClusterModuleAsyncOptions, ClusterModuleOptions } from './interfaces/index.js';
-import { CLUSTER_CLIENTS, CLUSTER_MERGED_OPTIONS } from './cluster.constants.js';
+import { ClusterModuleAsyncOptions, ClusterModuleOptions } from './interfaces/index.js';
 import {
   clusterClientsProvider,
   createAsyncProviders,
@@ -13,12 +9,10 @@ import {
   mergedOptionsProvider
 } from './cluster.providers.js';
 import { ClusterService } from './cluster.service.js';
-import { logger } from './cluster-logger.js';
+import { ClusterCleanupProvider } from './cluster-cleanup.provider';
 
 @Module({})
-export class ClusterModule implements OnApplicationShutdown {
-  constructor(@Inject(ModuleRef) private moduleRef: ModuleRef) {}
-
+export class ClusterModule {
   /**
    * Registers the module synchronously.
    *
@@ -31,7 +25,8 @@ export class ClusterModule implements OnApplicationShutdown {
       createOptionsProvider(options),
       clusterClientsProvider,
       mergedOptionsProvider,
-      ClusterService
+      ClusterService,
+      ClusterCleanupProvider
     ];
 
     return {
@@ -59,6 +54,7 @@ export class ClusterModule implements OnApplicationShutdown {
       clusterClientsProvider,
       mergedOptionsProvider,
       ClusterService,
+      ClusterCleanupProvider,
       ...(options.extraProviders ?? [])
     ];
 
@@ -69,29 +65,5 @@ export class ClusterModule implements OnApplicationShutdown {
       module: ClusterModule,
       providers
     };
-  }
-
-  async onApplicationShutdown(): Promise<void> {
-    const { closeClient } = this.moduleRef.get<ClusterModuleOptions>(CLUSTER_MERGED_OPTIONS, { strict: false });
-
-    if (closeClient) {
-      const clients = this.moduleRef.get<ClusterClients>(CLUSTER_CLIENTS, { strict: false });
-
-      for (const [namespace, client] of clients) {
-        if (client.status === 'end') continue;
-
-        if (client.status === 'ready') {
-          try {
-            await client.quit();
-          } catch (e) {
-            if (isError(e)) logger.error(generateErrorMessage(namespace, e.message), e.stack);
-          }
-
-          continue;
-        }
-
-        client.disconnect();
-      }
-    }
   }
 }
