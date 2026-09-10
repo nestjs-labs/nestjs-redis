@@ -3,14 +3,8 @@
   "rootDir": "lib",
   "testRegex": ".*\\.spec\\.ts$",
   "transform": {
-    "^.+\\.(t|j)s$": ["ts-jest", {
-      "tsconfig": {
-        "esModuleInterop": true,
-        "allowSyntheticDefaultImports": true
-      }
-    }]
+    "^.+\\.(t|j)s$": "ts-jest"
   },
-  "transformIgnorePatterns": [],
   "collectCoverageFrom": ["**/*.(t|j)s"],
   "coverageDirectory": "../coverage",
   "testEnvironment": "node",
