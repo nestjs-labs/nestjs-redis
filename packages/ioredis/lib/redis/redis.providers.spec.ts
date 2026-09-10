@@ -16,6 +16,7 @@ jest.mock('ioredis', () => {
     on = jest.fn();
     removeListener = jest.fn();
   }
+
   return { Redis: MockRedis };
 });
 
