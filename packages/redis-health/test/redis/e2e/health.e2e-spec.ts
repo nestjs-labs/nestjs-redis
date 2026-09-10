@@ -10,8 +10,18 @@ import { AppModule } from '../src/app.module';
 
 // Mock HealthCheckService for testing
 class MockHealthCheckService {
-  check() {
-    return Promise.resolve({ status: 'ok', info: {}, error: {}, details: {} });
+  async check(indicators: (() => Promise<Record<string, unknown>>)[]) {
+    const results = await Promise.all(indicators.map(fn => fn()));
+    const details: Record<string, unknown> = {};
+    const error: Record<string, unknown> = {};
+    const info: Record<string, unknown> = {};
+
+    results.forEach(result => {
+      Object.assign(details, result);
+      Object.assign(info, result);
+    });
+
+    return { details, error, info, status: 'ok' };
   }
 }
 
