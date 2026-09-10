@@ -5,7 +5,16 @@ import jestEslint from '@nestjs-labs/eslint-config/jest';
 
 export default defineConfig([
   {
+    ignores: ['**/*.config.mjs', '**/.lintstagedrc.mjs'],
+  },
+  ...nestEslint,
+  ...jestEslint,
+  {
     files: ['**/*.ts', '**/*.js'],
-    extends: [nestEslint, jestEslint],
+    languageOptions: {
+      parserOptions: {
+        project: false,
+      },
+    },
   },
 ]);
