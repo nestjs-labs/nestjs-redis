@@ -1,10 +1,20 @@
 import type { NestFastifyApplication } from '@nestjs/platform-fastify';
 import type { TestingModule } from '@nestjs/testing';
 
+import { Module } from '@nestjs/common';
 import { FastifyAdapter } from '@nestjs/platform-fastify';
+import { TerminusModule } from '@nestjs/terminus';
 import { Test } from '@nestjs/testing';
 
 import { AppModule } from '../src/app.module';
+
+// Mock TerminusModule to avoid TypeOrmHealthIndicator ModuleRef issue
+@Module({
+  exports: [],
+  imports: [],
+  providers: []
+})
+class MockTerminusModule {}
 
 describe('HealthController (e2e)', () => {
   let app: NestFastifyApplication;
@@ -13,8 +23,8 @@ describe('HealthController (e2e)', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [AppModule]
     })
-      .overrideProvider('TypeOrmHealthIndicator')
-      .useValue({})
+      .overrideModule(TerminusModule)
+      .useModule(MockTerminusModule)
       .compile();
 
     app = module.createNestApplication<NestFastifyApplication>(new FastifyAdapter());
