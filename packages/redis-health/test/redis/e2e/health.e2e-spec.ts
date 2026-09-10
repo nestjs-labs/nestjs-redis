@@ -3,16 +3,23 @@ import type { TestingModule } from '@nestjs/testing';
 
 import { Module } from '@nestjs/common';
 import { FastifyAdapter } from '@nestjs/platform-fastify';
-import { TerminusModule } from '@nestjs/terminus';
+import { HealthCheckService, TerminusModule } from '@nestjs/terminus';
 import { Test } from '@nestjs/testing';
 
 import { AppModule } from '../src/app.module';
 
+// Mock HealthCheckService for testing
+class MockHealthCheckService {
+  check() {
+    return Promise.resolve({ status: 'ok', info: {}, error: {}, details: {} });
+  }
+}
+
 // Mock TerminusModule to avoid TypeOrmHealthIndicator ModuleRef issue
 @Module({
-  exports: [],
+  exports: [HealthCheckService],
   imports: [],
-  providers: []
+  providers: [{ provide: HealthCheckService, useClass: MockHealthCheckService }]
 })
 class MockTerminusModule {}
 
