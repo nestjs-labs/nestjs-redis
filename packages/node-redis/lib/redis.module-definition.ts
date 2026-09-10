@@ -1,4 +1,3 @@
-import type { RedisOptionsFactory } from './interfaces/redis-factory.interface';
 import type { RedisOptions } from './interfaces/redis-options.interface';
 
 import { ConfigurableModuleBuilder } from '@nestjs/common';
@@ -17,5 +16,5 @@ export const { ASYNC_OPTIONS_TYPE, ConfigurableModuleClass, MODULE_OPTIONS_TOKEN
         global: extras.isGlobal
       })
     )
-    .setFactoryMethodName('createRedisOptions' as keyof RedisOptionsFactory<RedisOptions>)
+    .setFactoryMethodName('createRedisOptions')
     .build();
