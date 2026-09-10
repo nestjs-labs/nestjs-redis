@@ -4,6 +4,7 @@ import type { App } from 'supertest/types';
 
 import { Test } from '@nestjs/testing';
 import * as request from 'supertest';
+import { afterAll, beforeAll, describe, it } from 'vitest';
 
 import { AppModule } from './../src/app.module';
 

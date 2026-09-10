@@ -4,5 +4,6 @@ packages:
 allowBuilds:
   '@nestjs/core': true
   '@swc/core': true
+  esbuild: set this to true or false
 ignoredBuiltDependencies:
   - '@nestjs/core'

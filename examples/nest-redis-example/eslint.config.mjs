@@ -5,7 +5,7 @@ import jestEslint from '@nestjs-labs/eslint-config/jest';
 
 export default defineConfig([
   {
-    ignores: ['**/*.config.mjs', '**/.lintstagedrc.mjs'],
+    ignores: ['dist', 'node_modules', 'coverage'],
   },
   ...nestEslint,
   ...jestEslint,
