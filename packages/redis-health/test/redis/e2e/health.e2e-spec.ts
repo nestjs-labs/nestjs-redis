@@ -12,7 +12,10 @@ describe('HealthController (e2e)', () => {
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [AppModule]
-    }).compile();
+    })
+      .overrideProvider('TypeOrmHealthIndicator')
+      .useValue({})
+      .compile();
 
     app = module.createNestApplication<NestFastifyApplication>(new FastifyAdapter());
     await app.init();
