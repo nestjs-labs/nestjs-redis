@@ -11,7 +11,13 @@ import {
   redisClientsProvider
 } from './redis.providers.js';
 
-jest.mock('ioredis', () => jest.fn(() => ({})));
+jest.mock('ioredis', () => {
+  class MockRedis {
+    on = jest.fn();
+    removeListener = jest.fn();
+  }
+  return { Redis: MockRedis };
+});
 
 describe('createOptionsProvider', () => {
   test('should work correctly', () => {

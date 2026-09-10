@@ -1,6 +1,6 @@
 import type { RedisClientOptions } from '../interfaces/index.js';
 
-import Redis from 'ioredis';
+import { Redis } from 'ioredis';
 
 import { NAMESPACE_KEY } from '../redis.constants.js';
 import { create } from './redis.utils.js';
@@ -12,17 +12,24 @@ jest.mock('../redis-logger', () => ({
   }
 }));
 
+jest.mock('@/utils/index.js', () => ({
+  ...jest.requireActual('@/utils/index.js'),
+  isDirectInstanceOf: jest.fn(() => true)
+}));
+
 const mockOn = jest.fn();
 
-jest.mock('ioredis', () =>
-  jest.fn(() => ({
-    disconnect: jest.fn(),
-    on: mockOn,
-    quit: jest.fn()
-  }))
-);
+jest.mock('ioredis', () => {
+  return {
+    Redis: jest.fn(() => ({
+      disconnect: jest.fn(),
+      on: mockOn,
+      quit: jest.fn()
+    }))
+  };
+});
 
-const MockedRedis = Redis as jest.MockedClass<typeof Redis>;
+const MockedRedis = jest.mocked(Redis);
 
 beforeEach(() => {
   MockedRedis.mockClear();
