@@ -9,7 +9,6 @@ import {
   redisClientsProvider
 } from './redis.providers';
 import { RedisService } from './redis.service';
-import { RedisCleanupProvider } from './redis-cleanup.provider';
 
 @Module({})
 export class RedisModule {
@@ -25,8 +24,7 @@ export class RedisModule {
       createOptionsProvider(options),
       redisClientsProvider,
       mergedOptionsProvider,
-      RedisService,
-      RedisCleanupProvider
+      RedisService
     ];
 
     return {
@@ -54,7 +52,6 @@ export class RedisModule {
       redisClientsProvider,
       mergedOptionsProvider,
       RedisService,
-      RedisCleanupProvider,
       ...(options.extraProviders ?? [])
     ];
 
