@@ -3,22 +3,29 @@ import type { TestingModule } from '@nestjs/testing';
 import { ABNORMALLY_MEMORY_USAGE, CANNOT_BE_READ, FAILED_CLUSTER_STATE, OPERATIONS_TIMEOUT } from '@health/messages';
 import { Test } from '@nestjs/testing';
 import Redis, { Cluster } from 'ioredis';
+import { vi } from 'vitest';
 
 import { RedisHealthIndicator } from './redis.health';
 
-const mockPing = jest.fn();
-const mockInfo = jest.fn();
-const mockClusterInfo = jest.fn();
+const { mockClusterInfo, mockInfo, mockPing } = vi.hoisted(() => ({
+  mockClusterInfo: vi.fn(),
+  mockInfo: vi.fn(),
+  mockPing: vi.fn()
+}));
 
-jest.mock('ioredis', () => ({
-  Cluster: jest.fn(() => ({
-    cluster: mockClusterInfo
-  })),
+vi.mock('ioredis', () => ({
+  Cluster: vi.fn(
+    class {
+      cluster = mockClusterInfo;
+    }
+  ),
   __esModule: true,
-  default: jest.fn(() => ({
-    info: mockInfo,
-    ping: mockPing
-  }))
+  default: vi.fn(
+    class {
+      info = mockInfo;
+      ping = mockPing;
+    }
+  )
 }));
 
 describe('RedisHealthIndicator', () => {
@@ -40,8 +47,8 @@ describe('RedisHealthIndicator', () => {
 
   describe('redis', () => {
     test('the status should be up', async () => {
-      jest.spyOn(redis, 'ping').mockResolvedValue('PONG');
-      jest.spyOn(redis, 'info').mockResolvedValue('# Memory used_memory:100000 used_memory_human:');
+      vi.spyOn(redis, 'ping').mockResolvedValue('PONG');
+      vi.spyOn(redis, 'info').mockResolvedValue('# Memory used_memory:100000 used_memory_human:');
 
       await expect(
         indicator.checkHealth('redis', {
@@ -64,29 +71,29 @@ describe('RedisHealthIndicator', () => {
     test('should throw an error if ping is rejected', async () => {
       const message = 'a redis error';
 
-      jest.spyOn(redis, 'ping').mockRejectedValue(new Error(message));
+      vi.spyOn(redis, 'ping').mockRejectedValue(new Error(message));
 
       await expect(indicator.checkHealth('', { client: redis, type: 'redis' })).rejects.toThrow(message);
     });
 
     test('should throw an error if ping timed out', async () => {
-      jest.useFakeTimers();
+      vi.useFakeTimers();
 
       const waitPromise = (ms: number) =>
         new Promise<string>(resolve => {
           setTimeout(() => resolve('PONG'), ms);
         });
 
-      jest.spyOn(redis, 'ping').mockImplementation(() => waitPromise(2000));
+      vi.spyOn(redis, 'ping').mockImplementation(() => waitPromise(2000));
       const promise = indicator.checkHealth('', { client: redis, type: 'redis' });
 
-      jest.runAllTimers();
+      vi.runAllTimers();
       await expect(promise).rejects.toThrow(OPERATIONS_TIMEOUT(1000));
     });
 
     test('should throw an error if used memory is greater than threshold', async () => {
-      jest.spyOn(redis, 'ping').mockResolvedValue('PONG');
-      jest.spyOn(redis, 'info').mockResolvedValue('# Memory used_memory:101000 used_memory_human:');
+      vi.spyOn(redis, 'ping').mockResolvedValue('PONG');
+      vi.spyOn(redis, 'info').mockResolvedValue('# Memory used_memory:101000 used_memory_human:');
 
       await expect(
         indicator.checkHealth('redis', { client: redis, memoryThreshold: 1000 * 100, type: 'redis' })

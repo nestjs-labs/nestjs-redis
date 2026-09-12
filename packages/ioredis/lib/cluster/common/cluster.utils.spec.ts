@@ -1,28 +1,33 @@
 import type { ClusterClientOptions } from '../interfaces/index.js';
 
 import { Cluster } from 'ioredis';
+import { vi } from 'vitest';
 
 import { NAMESPACE_KEY } from '../cluster.constants.js';
 import { createClient } from './cluster.utils.js';
 
-jest.mock('../cluster-logger', () => ({
+const { mockOn } = vi.hoisted(() => ({
+  mockOn: vi.fn()
+}));
+
+vi.mock('../cluster-logger', () => ({
   logger: {
-    error: jest.fn(),
-    log: jest.fn()
+    error: vi.fn(),
+    log: vi.fn()
   }
 }));
 
-const mockOn = jest.fn();
-
-jest.mock('ioredis', () => ({
-  Cluster: jest.fn(() => ({
-    disconnect: jest.fn(),
-    on: mockOn,
-    quit: jest.fn()
-  }))
+vi.mock('ioredis', () => ({
+  Cluster: vi.fn(
+    class {
+      disconnect = vi.fn();
+      on = mockOn;
+      quit = vi.fn();
+    }
+  )
 }));
 
-const MockedCluster = Cluster as jest.MockedClass<typeof Cluster>;
+const MockedCluster = vi.mocked(Cluster);
 
 beforeEach(() => {
   MockedCluster.mockClear();
@@ -44,7 +49,7 @@ describe('createClient', () => {
   });
 
   test('should call onClientCreated', () => {
-    const mockOnClientCreated = jest.fn();
+    const mockOnClientCreated = vi.fn();
     const client = createClient({ nodes: [], onClientCreated: mockOnClientCreated }, {});
 
     expect(client).toBeDefined();

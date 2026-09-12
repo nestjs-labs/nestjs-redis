@@ -1,35 +1,45 @@
+import type * as utils from '@/utils/index.js';
 import type { RedisClientOptions } from '../interfaces/index.js';
 
 import { Redis } from 'ioredis';
+import { vi } from 'vitest';
 
 import { NAMESPACE_KEY } from '../redis.constants.js';
 import { create } from './redis.utils.js';
 
-jest.mock('../redis-logger', () => ({
+const { mockOn } = vi.hoisted(() => ({
+  mockOn: vi.fn()
+}));
+
+vi.mock('../redis-logger', () => ({
   logger: {
-    error: jest.fn(),
-    log: jest.fn()
+    error: vi.fn(),
+    log: vi.fn()
   }
 }));
 
-jest.mock('@/utils/index.js', () => ({
-  ...jest.requireActual('@/utils/index.js'),
-  isDirectInstanceOf: jest.fn(() => true)
-}));
+vi.mock('@/utils/index.js', async importOriginal => {
+  const actual = await importOriginal<typeof utils>();
 
-const mockOn = jest.fn();
-
-jest.mock('ioredis', () => {
   return {
-    Redis: jest.fn(() => ({
-      disconnect: jest.fn(),
-      on: mockOn,
-      quit: jest.fn()
-    }))
+    ...actual,
+    isDirectInstanceOf: vi.fn(() => true)
   };
 });
 
-const MockedRedis = jest.mocked(Redis);
+vi.mock('ioredis', () => {
+  return {
+    Redis: vi.fn(
+      class {
+        disconnect = vi.fn();
+        on = mockOn;
+        quit = vi.fn();
+      }
+    )
+  };
+});
+
+const MockedRedis = vi.mocked(Redis);
 
 beforeEach(() => {
   MockedRedis.mockClear();
@@ -83,7 +93,7 @@ describe('create', () => {
     });
 
     test('should call onClientCreated', () => {
-      const mockOnClientCreated = jest.fn();
+      const mockOnClientCreated = vi.fn();
       const client = create({ onClientCreated: mockOnClientCreated }, {});
 
       expect(client).toBeDefined();

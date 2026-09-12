@@ -5,12 +5,7 @@ import jestEslint from '@nestjs-labs/eslint-config/jest';
 
 export default defineConfig([
   {
-    ignores: [
-      '**/*.config.mjs',
-      '**/.lintstagedrc.mjs',
-      '**/global.d.ts',
-      'examples/nest-redis-example/**',
-    ],
+    ignores: ['**/*.config.mjs', '**/.lintstagedrc.mjs', 'examples/nest-redis-example/**', '**/vitest.config*.ts']
   },
   ...nestEslint,
   ...jestEslint,
@@ -18,8 +13,8 @@ export default defineConfig([
     files: ['**/*.ts', '**/*.js'],
     languageOptions: {
       parserOptions: {
-        project: false,
-      },
-    },
+        project: false
+      }
+    }
   }
 ]);

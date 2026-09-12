@@ -1,5 +1,7 @@
 import type { RedisModuleAsyncOptions, RedisModuleOptions, RedisOptionsFactory } from './interfaces/index.js';
 
+import { vi } from 'vitest';
+
 import { defaultRedisModuleOptions } from './default-options.js';
 import { REDIS_CLIENTS, REDIS_MERGED_OPTIONS, REDIS_OPTIONS } from './redis.constants.js';
 import {
@@ -11,10 +13,10 @@ import {
   redisClientsProvider
 } from './redis.providers.js';
 
-jest.mock('ioredis', () => {
+vi.mock('ioredis', () => {
   class MockRedis {
-    on = jest.fn();
-    removeListener = jest.fn();
+    on = vi.fn();
+    removeListener = vi.fn();
   }
 
   return { Redis: MockRedis };
@@ -40,7 +42,7 @@ describe('createAsyncProviders', () => {
     const result = createAsyncProviders({ inject: [], useFactory: () => ({}) });
 
     expect(result).toHaveLength(1);
-    expect(result).toPartiallyContain({ inject: [], provide: REDIS_OPTIONS });
+    expect(result).toEqual(expect.arrayContaining([expect.objectContaining({ inject: [], provide: REDIS_OPTIONS })]));
     expect(result[0]).toHaveProperty('useFactory');
   });
 
@@ -48,10 +50,12 @@ describe('createAsyncProviders', () => {
     const result = createAsyncProviders({ useClass: RedisConfigService });
 
     expect(result).toHaveLength(2);
-    expect(result).toIncludeAllPartialMembers([
-      { provide: RedisConfigService, useClass: RedisConfigService },
-      { inject: [RedisConfigService], provide: REDIS_OPTIONS }
-    ]);
+    expect(result).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ provide: RedisConfigService, useClass: RedisConfigService }),
+        expect.objectContaining({ inject: [RedisConfigService], provide: REDIS_OPTIONS })
+      ])
+    );
     expect(result[1]).toHaveProperty('useFactory');
   });
 
@@ -59,7 +63,9 @@ describe('createAsyncProviders', () => {
     const result = createAsyncProviders({ useExisting: RedisConfigService });
 
     expect(result).toHaveLength(1);
-    expect(result).toIncludeAllPartialMembers([{ inject: [RedisConfigService], provide: REDIS_OPTIONS }]);
+    expect(result).toEqual(
+      expect.arrayContaining([expect.objectContaining({ inject: [RedisConfigService], provide: REDIS_OPTIONS })])
+    );
     expect(result[0]).toHaveProperty('useFactory');
   });
 
