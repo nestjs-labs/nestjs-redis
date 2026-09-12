@@ -1,18 +1,24 @@
 import { MissingConfigurationsError } from '@/errors/index.js';
-import { DynamicModule, Module, Provider } from '@nestjs/common';
+import { generateErrorMessage } from '@/messages/index.js';
+import { isError } from '@/utils/index.js';
+import { DynamicModule, Module, OnApplicationShutdown, Provider } from '@nestjs/common';
+import { ModuleRef } from '@nestjs/core';
 
-import { ClusterModuleAsyncOptions, ClusterModuleOptions } from './interfaces/index.js';
+import { ClusterClients, ClusterModuleAsyncOptions, ClusterModuleOptions } from './interfaces/index.js';
+import { CLUSTER_CLIENTS, CLUSTER_MERGED_OPTIONS } from './cluster.constants.js';
 import {
   clusterClientsProvider,
   createAsyncProviders,
   createOptionsProvider,
   mergedOptionsProvider
 } from './cluster.providers.js';
-import { ClusterCleanupProvider } from './cluster-cleanup.provider.js';
 import { ClusterService } from './cluster.service.js';
+import { logger } from './cluster-logger.js';
 
 @Module({})
-export class ClusterModule {
+export class ClusterModule implements OnApplicationShutdown {
+  constructor(private readonly moduleRef: ModuleRef) {}
+
   /**
    * Registers the module synchronously.
    *
@@ -25,8 +31,7 @@ export class ClusterModule {
       createOptionsProvider(options),
       clusterClientsProvider,
       mergedOptionsProvider,
-      ClusterService,
-      ClusterCleanupProvider
+      ClusterService
     ];
 
     return {
@@ -54,7 +59,6 @@ export class ClusterModule {
       clusterClientsProvider,
       mergedOptionsProvider,
       ClusterService,
-      ClusterCleanupProvider,
       ...(options.extraProviders ?? [])
     ];
 
@@ -65,5 +69,29 @@ export class ClusterModule {
       module: ClusterModule,
       providers
     };
+  }
+
+  async onApplicationShutdown(): Promise<void> {
+    const { closeClient } = this.moduleRef.get<ClusterModuleOptions>(CLUSTER_MERGED_OPTIONS, { strict: false });
+
+    if (!closeClient) return;
+
+    const clients = this.moduleRef.get<ClusterClients>(CLUSTER_CLIENTS, { strict: false });
+
+    for (const [namespace, client] of clients) {
+      if (client.status === 'end') continue;
+
+      if (client.status === 'ready') {
+        try {
+          await client.quit();
+        } catch (e) {
+          if (isError(e)) logger.error(generateErrorMessage(namespace, e.message), e.stack);
+        }
+
+        continue;
+      }
+
+      client.disconnect();
+    }
   }
 }

@@ -1,18 +1,25 @@
 import { MissingConfigurationsError } from '@/errors/index.js';
-import { DynamicModule, Module, Provider } from '@nestjs/common';
+import { generateErrorMessage } from '@/messages/index.js';
+import { isError } from '@/utils/index.js';
+import { DynamicModule, Module, OnApplicationShutdown, Provider } from '@nestjs/common';
+import { ModuleRef } from '@nestjs/core';
 
-import { RedisModuleAsyncOptions, RedisModuleOptions } from './interfaces/index.js';
+import { removeListeners } from './common/index.js';
+import { RedisClients, RedisModuleAsyncOptions, RedisModuleOptions } from './interfaces/index.js';
+import { REDIS_CLIENTS, REDIS_MERGED_OPTIONS } from './redis.constants';
 import {
   createAsyncProviders,
   createOptionsProvider,
   mergedOptionsProvider,
   redisClientsProvider
 } from './redis.providers';
-import { RedisCleanupProvider } from './redis-cleanup.provider.js';
 import { RedisService } from './redis.service';
+import { logger } from './redis-logger.js';
 
 @Module({})
-export class RedisModule {
+export class RedisModule implements OnApplicationShutdown {
+  constructor(private readonly moduleRef: ModuleRef) {}
+
   /**
    * Registers the module synchronously.
    *
@@ -25,8 +32,7 @@ export class RedisModule {
       createOptionsProvider(options),
       redisClientsProvider,
       mergedOptionsProvider,
-      RedisService,
-      RedisCleanupProvider
+      RedisService
     ];
 
     return {
@@ -54,7 +60,6 @@ export class RedisModule {
       redisClientsProvider,
       mergedOptionsProvider,
       RedisService,
-      RedisCleanupProvider,
       ...(options.extraProviders ?? [])
     ];
 
@@ -65,5 +70,25 @@ export class RedisModule {
       module: RedisModule,
       providers
     };
+  }
+
+  async onApplicationShutdown(): Promise<void> {
+    const { closeClient } = this.moduleRef.get<RedisModuleOptions>(REDIS_MERGED_OPTIONS, { strict: false });
+
+    if (!closeClient) return;
+
+    const clients = this.moduleRef.get<RedisClients>(REDIS_CLIENTS, { strict: false });
+
+    for (const [namespace, client] of clients) {
+      try {
+        if (client.status === 'end') continue;
+
+        await client.quit();
+      } catch (e) {
+        if (isError(e)) logger.error(generateErrorMessage(namespace, e.message), e.stack);
+      } finally {
+        removeListeners(client);
+      }
+    }
   }
 }
