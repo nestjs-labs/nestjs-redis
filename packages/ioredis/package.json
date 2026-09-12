@@ -44,7 +44,8 @@
   },
   "devDependencies": {
     "@nestjs/common": "12.0.1",
-    "@nestjs/core": "12.0.1"
+    "@nestjs/core": "12.0.1",
+    "rxjs": "7.8.1"
   },
   "peerDependencies": {
     "@nestjs/common": "^12.0.0",
@@ -52,7 +53,7 @@
     "ioredis": "^5.0.0"
   },
   "engines": {
-    "node": ">=22.12.0"
+    "node": ">=24"
   },
   "publishConfig": {
     "access": "public"
