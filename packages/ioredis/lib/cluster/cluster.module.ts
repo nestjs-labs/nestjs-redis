@@ -8,6 +8,7 @@ import {
   createOptionsProvider,
   mergedOptionsProvider
 } from './cluster.providers.js';
+import { ClusterCleanupProvider } from './cluster-cleanup.provider.js';
 import { ClusterService } from './cluster.service.js';
 
 @Module({})
@@ -24,7 +25,8 @@ export class ClusterModule {
       createOptionsProvider(options),
       clusterClientsProvider,
       mergedOptionsProvider,
-      ClusterService
+      ClusterService,
+      ClusterCleanupProvider
     ];
 
     return {
@@ -52,6 +54,7 @@ export class ClusterModule {
       clusterClientsProvider,
       mergedOptionsProvider,
       ClusterService,
+      ClusterCleanupProvider,
       ...(options.extraProviders ?? [])
     ];
 
