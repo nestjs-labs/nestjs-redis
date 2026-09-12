@@ -1,15 +1,20 @@
-import { defineConfig } from 'vitest/config';
+import swc from 'unplugin-swc';
 import tsconfigPaths from 'vite-tsconfig-paths';
+import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
-  plugins: [tsconfigPaths()],
+  plugins: [
+    tsconfigPaths(),
+    swc.vite({
+      jsc: {
+        parser: { decorators: true, syntax: 'typescript' },
+        transform: { decoratorMetadata: true, legacyDecorator: true },
+      },
+    }),
+  ],
   test: {
     globals: true,
-    environment: 'node',
     include: ['src/**/*.spec.ts'],
-    coverage: {
-      provider: 'v8',
-      reporter: ['text', 'json', 'html'],
-    },
+    root: './',
   },
 });

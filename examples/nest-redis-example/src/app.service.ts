@@ -6,7 +6,11 @@ import { RedisService } from '@nestjs-labs/nestjs-redis';
 export class AppService {
   constructor(private readonly redisService: RedisService) {}
 
-  async getHello(): Promise<string | null> {
+  getHello(): string {
+    return 'Hello World!';
+  }
+
+  async getRedisHello(): Promise<string | null> {
     const redis = this.redisService.getClient();
 
     await redis.set('test-key', 'Hello from Redis!');
