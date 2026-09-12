@@ -4,7 +4,7 @@
 
 ```ts
 import { Module } from '@nestjs/common';
-import { RedisModule } from '@nestjs-labs/nestjs-ioredis';
+import { RedisModule } from '@liaoliaots/nestjs-redis';
 
 @Module({
   imports: [
@@ -24,7 +24,7 @@ export class AppModule {}
 
 ```ts
 import { Injectable } from '@nestjs/common';
-import { RedisService, DEFAULT_REDIS } from '@nestjs-labs/nestjs-ioredis';
+import { RedisService, DEFAULT_REDIS } from '@liaoliaots/nestjs-redis';
 import Redis from 'ioredis';
 
 @Injectable()
@@ -57,7 +57,7 @@ export class AppService {
 ```ts
 // an example
 import { Module } from '@nestjs/common';
-import { RedisModule, RedisService } from '@nestjs-labs/nestjs-ioredis';
+import { RedisModule, RedisService } from '@liaoliaots/nestjs-redis';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { ThrottlerStorageRedisService } from 'nestjs-throttler-storage-redis';
 
@@ -110,7 +110,7 @@ via `useFactory`:
 
 ```ts
 import { Module } from '@nestjs/common';
-import { RedisModule, RedisModuleOptions } from '@nestjs-labs/nestjs-ioredis';
+import { RedisModule, RedisModuleOptions } from '@liaoliaots/nestjs-redis';
 import { ConfigService, ConfigModule } from '@nestjs/config';
 
 @Module({
@@ -139,7 +139,7 @@ via `useClass`:
 
 ```ts
 import { Module, Injectable } from '@nestjs/common';
-import { RedisModule, RedisOptionsFactory, RedisModuleOptions } from '@nestjs-labs/nestjs-ioredis';
+import { RedisModule, RedisOptionsFactory, RedisModuleOptions } from '@liaoliaots/nestjs-redis';
 
 @Injectable()
 export class RedisConfigService implements RedisOptionsFactory {
@@ -172,7 +172,7 @@ via `extraProviders`:
 // an example
 
 import { Module, ValueProvider } from '@nestjs/common';
-import { RedisModule, RedisModuleOptions } from '@nestjs-labs/nestjs-ioredis';
+import { RedisModule, RedisModuleOptions } from '@liaoliaots/nestjs-redis';
 
 const MyOptionsSymbol = Symbol('options');
 const MyOptionsProvider: ValueProvider<RedisModuleOptions> = {
@@ -213,7 +213,7 @@ RedisModule.forRootAsync({
 
 ```ts
 import { Module } from '@nestjs/common';
-import { RedisModule } from '@nestjs-labs/nestjs-ioredis';
+import { RedisModule } from '@liaoliaots/nestjs-redis';
 
 @Module({
   imports: [
@@ -240,7 +240,7 @@ The `RedisModule` will display a message when the server reports that it is read
 
 ```ts
 import { Module } from '@nestjs/common';
-import { RedisModule } from '@nestjs-labs/nestjs-ioredis';
+import { RedisModule } from '@liaoliaots/nestjs-redis';
 
 @Module({
   imports: [
@@ -263,7 +263,7 @@ export class AppModule {}
 
 ```ts
 import { Module } from '@nestjs/common';
-import { RedisModule } from '@nestjs-labs/nestjs-ioredis';
+import { RedisModule } from '@liaoliaots/nestjs-redis';
 
 @Module({
   imports: [
@@ -291,7 +291,7 @@ with URL:
 
 ```ts
 import { Module } from '@nestjs/common';
-import { RedisModule } from '@nestjs-labs/nestjs-ioredis';
+import { RedisModule } from '@liaoliaots/nestjs-redis';
 
 @Module({
   imports: [
@@ -319,7 +319,7 @@ export class AppModule {}
 
 ```ts
 import { Module } from '@nestjs/common';
-import { RedisModule } from '@nestjs-labs/nestjs-ioredis';
+import { RedisModule } from '@liaoliaots/nestjs-redis';
 
 @Module({
   imports: [
@@ -350,7 +350,7 @@ You can also override the `commonOptions`:
 
 ```ts
 import { Module } from '@nestjs/common';
-import { RedisModule } from '@nestjs-labs/nestjs-ioredis';
+import { RedisModule } from '@liaoliaots/nestjs-redis';
 
 @Module({
   imports: [
@@ -384,7 +384,7 @@ For example, we can listen to some events of the redis instance.
 
 ```ts
 import { Module } from '@nestjs/common';
-import { RedisModule } from '@nestjs-labs/nestjs-ioredis';
+import { RedisModule } from '@liaoliaots/nestjs-redis';
 
 @Module({
   imports: [
@@ -413,7 +413,7 @@ You can change this behavior by `isGlobal` parameter:
 ```ts
 // cats.module.ts
 import { Module } from '@nestjs/common';
-import { RedisModule } from '@nestjs-labs/nestjs-ioredis';
+import { RedisModule } from '@liaoliaots/nestjs-redis';
 import { CatsService } from './cats.service';
 import { CatsController } from './cats.controller';
 
@@ -466,7 +466,7 @@ unixsocketperm 777
 
 ```ts
 import { Module } from '@nestjs/common';
-import { RedisModule } from '@nestjs-labs/nestjs-ioredis';
+import { RedisModule } from '@liaoliaots/nestjs-redis';
 
 @Module({
   imports: [

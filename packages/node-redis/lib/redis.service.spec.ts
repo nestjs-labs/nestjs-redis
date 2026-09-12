@@ -1,15 +1,17 @@
 import type { TestingModule } from '@nestjs/testing';
+import type { Mock } from 'vitest';
 
 import { Test } from '@nestjs/testing';
+import { vi } from 'vitest';
 
 import { REDIS_CLIENT } from './redis.constants';
 import { RedisService } from './redis.service';
 
 interface RedisClientMock {
-  close: jest.Mock<Promise<void>, []>;
-  connect: jest.Mock<Promise<void>, []>;
+  close: Mock<() => Promise<void>>;
+  connect: Mock<() => Promise<void>>;
   isOpen: boolean;
-  ping: jest.Mock<Promise<string>, []>;
+  ping: Mock<() => Promise<string>>;
 }
 
 interface RedisClusterMock extends RedisClientMock {
@@ -17,19 +19,19 @@ interface RedisClusterMock extends RedisClientMock {
 }
 
 const createClientMock = (overrides: Partial<RedisClientMock> = {}): RedisClientMock => ({
-  close: jest.fn().mockResolvedValue(undefined),
-  connect: jest.fn().mockResolvedValue(undefined),
+  close: vi.fn().mockResolvedValue(undefined),
+  connect: vi.fn().mockResolvedValue(undefined),
   isOpen: true,
-  ping: jest.fn().mockResolvedValue('PONG'),
+  ping: vi.fn().mockResolvedValue('PONG'),
   ...overrides
 });
 
 const createClusterMock = (overrides: Partial<RedisClusterMock> = {}): RedisClusterMock => ({
-  close: jest.fn().mockResolvedValue(undefined),
-  connect: jest.fn().mockResolvedValue(undefined),
+  close: vi.fn().mockResolvedValue(undefined),
+  connect: vi.fn().mockResolvedValue(undefined),
   isOpen: true,
   masters: [{ toString: () => 'redis://127.0.0.1:16379' }],
-  ping: jest.fn().mockResolvedValue('PONG'),
+  ping: vi.fn().mockResolvedValue('PONG'),
   ...overrides
 });
 

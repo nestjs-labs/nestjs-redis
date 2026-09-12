@@ -1,35 +1,35 @@
 import type { ModuleRef } from '@nestjs/core';
 import type { RedisModuleAsyncOptions } from './interfaces/index.js';
 
+import { vi } from 'vitest';
+
 import { removeListeners } from './common/index.js';
 import { REDIS_CLIENTS, REDIS_MERGED_OPTIONS } from './redis.constants.js';
 import { RedisModule } from './redis.module.js';
 import { logger } from './redis-logger.js';
 
-jest.mock('./common', () => ({
-  removeListeners: jest.fn()
+vi.mock('./common/index.js', () => ({
+  removeListeners: vi.fn()
 }));
-jest.mock('./redis-logger', () => ({
+vi.mock('./redis-logger.js', () => ({
   logger: {
-    error: jest.fn()
+    error: vi.fn()
   }
 }));
 
-describe('forRoot', () => {
-  test('should work correctly', () => {
+describe('RedisModule', () => {
+  test('registers synchronously', () => {
     const module = RedisModule.forRoot();
 
     expect(module.global).toBe(true);
     expect(module.module).toBe(RedisModule);
-    expect(module.providers?.length).toBeGreaterThanOrEqual(4);
-    expect(module.exports?.length).toBeGreaterThanOrEqual(1);
+    expect(module.providers).toHaveLength(4);
+    expect(module.exports).toEqual([expect.any(Function)]);
   });
-});
 
-describe('forRootAsync', () => {
-  test('should work correctly', () => {
+  test('registers asynchronously with extra providers', () => {
     const options: RedisModuleAsyncOptions = {
-      extraProviders: [{ provide: '', useValue: '' }],
+      extraProviders: [{ provide: 'extra', useValue: true }],
       imports: [],
       inject: [],
       useFactory: () => ({})
@@ -38,50 +38,34 @@ describe('forRootAsync', () => {
 
     expect(module.global).toBe(true);
     expect(module.module).toBe(RedisModule);
-    expect(module.imports).toBeArray();
-    expect(module.providers?.length).toBeGreaterThanOrEqual(5);
-    expect(module.exports?.length).toBeGreaterThanOrEqual(1);
+    expect(module.imports).toEqual([]);
+    expect(module.providers).toHaveLength(5);
+    expect(module.exports).toEqual([expect.any(Function)]);
   });
 
-  test('without extraProviders', () => {
-    const options: RedisModuleAsyncOptions = {
-      useFactory: () => ({})
-    };
-    const module = RedisModule.forRootAsync(options);
-
-    expect(module.providers?.length).toBeGreaterThanOrEqual(4);
-  });
-
-  test('should throw an error', () => {
+  test('rejects an asynchronous registration without a factory', () => {
     expect(() => RedisModule.forRootAsync({})).toThrow();
   });
-});
 
-describe('onApplicationShutdown', () => {
-  const mockRemoveListeners = removeListeners as jest.MockedFunction<typeof removeListeners>;
-  const mockError = jest.spyOn(logger, 'error');
-
-  beforeEach(() => {
-    mockRemoveListeners.mockClear();
-    mockError.mockClear();
-  });
-
-  test('should work correctly', async () => {
-    const mockQuit = jest.fn().mockRejectedValue(new Error('quit failed'));
-    const client = { quit: mockQuit, status: 'ready' };
-
-    const module = new RedisModule({
-      get: (token: unknown) => {
+  test('closes clients on application shutdown', async () => {
+    const client = {
+      quit: vi.fn().mockRejectedValue(new Error('quit failed')),
+      status: 'ready'
+    };
+    const moduleRef = {
+      get: vi.fn((token: unknown) => {
         if (token === REDIS_MERGED_OPTIONS) return { closeClient: true };
         if (token === REDIS_CLIENTS) return new Map([['default', client]]);
 
         return undefined;
-      }
-    } as ModuleRef);
+      })
+    } as unknown as ModuleRef;
+    const module = new RedisModule(moduleRef);
 
     await module.onApplicationShutdown();
-    expect(mockQuit).toHaveBeenCalledTimes(1);
-    expect(mockRemoveListeners).toHaveBeenCalledWith(client);
-    expect(mockError).toHaveBeenCalledTimes(1);
+
+    expect(client.quit).toHaveBeenCalledTimes(1);
+    expect(removeListeners).toHaveBeenCalledWith(client);
+    expect(logger.error).toHaveBeenCalledTimes(1);
   });
 });

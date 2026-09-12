@@ -27,6 +27,6 @@ describe('ManagerController (e2e)', () => {
     const res = await app.inject({ method: 'GET', url: '/manager' });
 
     expect(res.statusCode).toBe(200);
-    expect(JSON.parse(res.payload)).toIncludeSameMembers(['PONG', 'PONG']);
+    expect(JSON.parse(res.payload)).toEqual(['PONG', 'PONG']);
   });
 });

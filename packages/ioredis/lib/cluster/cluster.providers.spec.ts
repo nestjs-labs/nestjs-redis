@@ -1,5 +1,7 @@
 import type { ClusterModuleAsyncOptions, ClusterModuleOptions, ClusterOptionsFactory } from './interfaces/index.js';
 
+import { vi } from 'vitest';
+
 import { CLUSTER_CLIENTS, CLUSTER_MERGED_OPTIONS, CLUSTER_OPTIONS } from './cluster.constants.js';
 import {
   clusterClientsProvider,
@@ -11,8 +13,8 @@ import {
 } from './cluster.providers.js';
 import { defaultClusterModuleOptions } from './default-options.js';
 
-jest.mock('ioredis', () => ({
-  Cluster: jest.fn(() => ({}))
+vi.mock('ioredis', () => ({
+  Cluster: vi.fn(class {})
 }));
 
 describe('createOptionsProvider', () => {
@@ -35,7 +37,7 @@ describe('createAsyncProviders', () => {
     const result = createAsyncProviders({ inject: [], useFactory: () => ({ config: { nodes: [] } }) });
 
     expect(result).toHaveLength(1);
-    expect(result).toPartiallyContain({ inject: [], provide: CLUSTER_OPTIONS });
+    expect(result).toEqual(expect.arrayContaining([expect.objectContaining({ inject: [], provide: CLUSTER_OPTIONS })]));
     expect(result[0]).toHaveProperty('useFactory');
   });
 
@@ -43,10 +45,12 @@ describe('createAsyncProviders', () => {
     const result = createAsyncProviders({ useClass: ClusterConfigService });
 
     expect(result).toHaveLength(2);
-    expect(result).toIncludeAllPartialMembers([
-      { provide: ClusterConfigService, useClass: ClusterConfigService },
-      { inject: [ClusterConfigService], provide: CLUSTER_OPTIONS }
-    ]);
+    expect(result).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ provide: ClusterConfigService, useClass: ClusterConfigService }),
+        expect.objectContaining({ inject: [ClusterConfigService], provide: CLUSTER_OPTIONS })
+      ])
+    );
     expect(result[1]).toHaveProperty('useFactory');
   });
 
@@ -54,7 +58,9 @@ describe('createAsyncProviders', () => {
     const result = createAsyncProviders({ useExisting: ClusterConfigService });
 
     expect(result).toHaveLength(1);
-    expect(result).toIncludeAllPartialMembers([{ inject: [ClusterConfigService], provide: CLUSTER_OPTIONS }]);
+    expect(result).toEqual(
+      expect.arrayContaining([expect.objectContaining({ inject: [ClusterConfigService], provide: CLUSTER_OPTIONS })])
+    );
     expect(result[0]).toHaveProperty('useFactory');
   });
 

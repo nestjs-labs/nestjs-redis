@@ -4,12 +4,12 @@ import {
   HealthCheckResult,
   HealthCheckService,
 } from '@nestjs/terminus';
-import { RedisClientType } from 'redis';
+import type { RedisClientType } from 'redis';
 
 import { InjectRedis } from '@nestjs-labs/nestjs-redis';
 import { RedisHealthIndicator } from '@nestjs-labs/nestjs-redis-health';
 
-import { AppService } from './app.service';
+import { AppService } from './app.service.js';
 
 @Controller()
 export class AppController {
@@ -20,14 +20,19 @@ export class AppController {
     private readonly redisIndicator: RedisHealthIndicator,
   ) {}
 
-  @Get('redis-get')
-  async getRedis() {
-    return await this.redis.get('test');
+  @Get()
+  getHello(): string {
+    return this.appService.getHello();
   }
 
   @Get('hello')
-  async getHello() {
-    return await this.appService.getHello();
+  async getRedisHello(): Promise<string | null> {
+    return await this.appService.getRedisHello();
+  }
+
+  @Get('redis-get')
+  async getRedis() {
+    return await this.redis.get('test');
   }
 
   @Get('redis-info')

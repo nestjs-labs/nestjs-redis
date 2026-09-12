@@ -5,8 +5,8 @@
     "paths": {
       "@/*": ["../ioredis/lib/*"],
       "@health/*": ["./lib/*"]
-    }
+    },
+    "types": ["node", "vitest/globals"]
   },
-  "include": ["lib", "test"],
-  "files": ["../global.d.ts"]
+  "include": ["lib", "test"]
 }

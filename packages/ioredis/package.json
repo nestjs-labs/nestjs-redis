@@ -29,11 +29,11 @@
     "lint": "concurrently \"npm:lint:es\" \"npm:lint:tsc\"",
     "lint:es": "eslint \"{lib,test}/**/*.ts\"",
     "lint:tsc": "tsc --project tsconfig.json --noEmit",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:cov": "jest --coverage",
-    "test:e2e": "jest --config ./test/jest-e2e.json",
-    "test:clear": "jest --clearCache",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:cov": "vitest run --coverage",
+    "test:e2e": "vitest run --config ../vitest.config.e2e.ts",
+    "test:clear": "vitest --clearCache",
     "badges": "istanbul-badges-readme --coverageDir=\"./coverage\" --readmeDir=\"./\" --style=\"flat-square\" --logo=\"jest\"",
     "madge": "madge --image dependencies.svg dist/index.js",
     "publish:alpha": "npm publish --tag alpha",
@@ -42,13 +42,18 @@
   "dependencies": {
     "tslib": "2.8.1"
   },
+  "devDependencies": {
+    "@nestjs/common": "12.0.1",
+    "@nestjs/core": "12.0.1",
+    "rxjs": "7.8.1"
+  },
   "peerDependencies": {
-    "@nestjs/common": "^10.0.0 || ^11.0.0",
-    "@nestjs/core": "^10.0.0 || ^11.0.0",
+    "@nestjs/common": "^12.0.0",
+    "@nestjs/core": "^12.0.0",
     "ioredis": "^5.0.0"
   },
   "engines": {
-    "node": ">=16"
+    "node": ">=24"
   },
   "publishConfig": {
     "access": "public"
