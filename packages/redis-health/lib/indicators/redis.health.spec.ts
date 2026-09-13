@@ -1,6 +1,7 @@
 import type { TestingModule } from '@nestjs/testing';
 
 import { ABNORMALLY_MEMORY_USAGE, CANNOT_BE_READ, FAILED_CLUSTER_STATE, OPERATIONS_TIMEOUT } from '@health/messages';
+import { TerminusModule } from '@nestjs/terminus';
 import { Test } from '@nestjs/testing';
 import Redis, { Cluster } from 'ioredis';
 import { vi } from 'vitest';
@@ -40,7 +41,10 @@ describe('RedisHealthIndicator', () => {
     redis = new Redis();
     cluster = new Cluster([]);
 
-    const module: TestingModule = await Test.createTestingModule({ providers: [RedisHealthIndicator] }).compile();
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [TerminusModule],
+      providers: [RedisHealthIndicator]
+    }).compile();
 
     indicator = await module.resolve<RedisHealthIndicator>(RedisHealthIndicator);
   });
@@ -68,15 +72,17 @@ describe('RedisHealthIndicator', () => {
       ).rejects.toThrow();
     });
 
-    test('should throw an error if ping is rejected', async () => {
+    test('should return a down status if ping is rejected', async () => {
       const message = 'a redis error';
 
       vi.spyOn(redis, 'ping').mockRejectedValue(new Error(message));
 
-      await expect(indicator.checkHealth('', { client: redis, type: 'redis' })).rejects.toThrow(message);
+      await expect(indicator.checkHealth('', { client: redis, type: 'redis' })).resolves.toEqual({
+        '': { message, status: 'down' }
+      });
     });
 
-    test('should throw an error if ping timed out', async () => {
+    test('should return a down status if ping timed out', async () => {
       vi.useFakeTimers();
 
       const waitPromise = (ms: number) =>
@@ -88,16 +94,20 @@ describe('RedisHealthIndicator', () => {
       const promise = indicator.checkHealth('', { client: redis, type: 'redis' });
 
       vi.runAllTimers();
-      await expect(promise).rejects.toThrow(OPERATIONS_TIMEOUT(1000));
+      await expect(promise).resolves.toEqual({
+        '': { message: OPERATIONS_TIMEOUT(1000), status: 'down' }
+      });
     });
 
-    test('should throw an error if used memory is greater than threshold', async () => {
+    test('should return a down status if used memory is greater than threshold', async () => {
       vi.spyOn(redis, 'ping').mockResolvedValue('PONG');
       vi.spyOn(redis, 'info').mockResolvedValue('# Memory used_memory:101000 used_memory_human:');
 
       await expect(
         indicator.checkHealth('redis', { client: redis, memoryThreshold: 1000 * 100, type: 'redis' })
-      ).rejects.toThrow(ABNORMALLY_MEMORY_USAGE);
+      ).resolves.toEqual({
+        redis: { message: ABNORMALLY_MEMORY_USAGE, status: 'down' }
+      });
     });
   });
 
@@ -110,26 +120,30 @@ describe('RedisHealthIndicator', () => {
       });
     });
 
-    test('should throw an error', async () => {
+    test('should return a down status if reading cluster info fails', async () => {
       const message = 'a redis error';
 
       mockClusterInfo.mockRejectedValue(new Error(message));
 
-      await expect(indicator.checkHealth('', { client: cluster, type: 'cluster' })).rejects.toThrow(message);
+      await expect(indicator.checkHealth('', { client: cluster, type: 'cluster' })).resolves.toEqual({
+        '': { message, status: 'down' }
+      });
     });
 
-    test('should throw an error if cluster info is null', async () => {
+    test('should return a down status if cluster info is null', async () => {
       mockClusterInfo.mockResolvedValue(null);
 
-      await expect(indicator.checkHealth('', { client: cluster, type: 'cluster' })).rejects.toThrow(CANNOT_BE_READ);
+      await expect(indicator.checkHealth('', { client: cluster, type: 'cluster' })).resolves.toEqual({
+        '': { message: CANNOT_BE_READ, status: 'down' }
+      });
     });
 
-    test('should throw an error if cluster info does not contain "cluster_state:ok"', async () => {
+    test('should return a down status if cluster info does not contain "cluster_state:ok"', async () => {
       mockClusterInfo.mockResolvedValue('cluster_state:fail');
 
-      await expect(indicator.checkHealth('', { client: cluster, type: 'cluster' })).rejects.toThrow(
-        FAILED_CLUSTER_STATE
-      );
+      await expect(indicator.checkHealth('', { client: cluster, type: 'cluster' })).resolves.toEqual({
+        '': { message: FAILED_CLUSTER_STATE, status: 'down' }
+      });
     });
   });
 });
