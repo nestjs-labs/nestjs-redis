@@ -1,6 +1,6 @@
 {
   "name": "@nestjs-labs/nestjs-ioredis",
-  "version": "11.0.4",
+  "version": "12.0.0-alpha.0",
   "description": "Redis(ioredis) module for Nest framework (node.js).",
   "author": "LiaoLiao <yxiaosong002@gmail.com>",
   "exports": "./dist/index.js",
