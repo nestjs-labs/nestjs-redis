@@ -10,9 +10,7 @@ describe('HealthController (e2e)', () => {
   let app: NestFastifyApplication;
 
   beforeAll(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      imports: [AppModule]
-    }).compile();
+    const module: TestingModule = await Test.createTestingModule({ imports: [AppModule] }).compile();
 
     app = module.createNestApplication<NestFastifyApplication>(new FastifyAdapter());
     await app.init();

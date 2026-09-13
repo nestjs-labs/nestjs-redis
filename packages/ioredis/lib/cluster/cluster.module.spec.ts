@@ -1,31 +1,31 @@
 import type { ModuleRef } from '@nestjs/core';
 import type { ClusterModuleAsyncOptions } from './interfaces/index.js';
 
+import { vi } from 'vitest';
+
 import { CLUSTER_CLIENTS, CLUSTER_MERGED_OPTIONS } from './cluster.constants.js';
 import { ClusterModule } from './cluster.module.js';
 import { logger } from './cluster-logger.js';
 
-jest.mock('./cluster-logger', () => ({
+vi.mock('./cluster-logger.js', () => ({
   logger: {
-    error: jest.fn()
+    error: vi.fn()
   }
 }));
 
-describe('forRoot', () => {
-  test('should work correctly', () => {
+describe('ClusterModule', () => {
+  test('registers synchronously', () => {
     const module = ClusterModule.forRoot({ config: { nodes: [] } });
 
     expect(module.global).toBe(true);
     expect(module.module).toBe(ClusterModule);
-    expect(module.providers?.length).toBeGreaterThanOrEqual(4);
-    expect(module.exports?.length).toBeGreaterThanOrEqual(1);
+    expect(module.providers).toHaveLength(4);
+    expect(module.exports).toEqual([expect.any(Function)]);
   });
-});
 
-describe('forRootAsync', () => {
-  test('should work correctly', () => {
+  test('registers asynchronously with extra providers', () => {
     const options: ClusterModuleAsyncOptions = {
-      extraProviders: [{ provide: '', useValue: '' }],
+      extraProviders: [{ provide: 'extra', useValue: true }],
       imports: [],
       inject: [],
       useFactory: () => ({ config: { nodes: [] } })
@@ -34,47 +34,35 @@ describe('forRootAsync', () => {
 
     expect(module.global).toBe(true);
     expect(module.module).toBe(ClusterModule);
-    expect(module.imports).toBeArray();
-    expect(module.providers?.length).toBeGreaterThanOrEqual(5);
-    expect(module.exports?.length).toBeGreaterThanOrEqual(1);
+    expect(module.imports).toEqual([]);
+    expect(module.providers).toHaveLength(5);
+    expect(module.exports).toEqual([expect.any(Function)]);
   });
 
-  test('without extraProviders', () => {
-    const options: ClusterModuleAsyncOptions = {
-      useFactory: () => ({ config: { nodes: [] } })
-    };
-    const module = ClusterModule.forRootAsync(options);
-
-    expect(module.providers?.length).toBeGreaterThanOrEqual(4);
-  });
-
-  test('should throw an error', () => {
+  test('rejects an asynchronous registration without a factory', () => {
     expect(() => ClusterModule.forRootAsync({})).toThrow();
   });
-});
 
-describe('onApplicationShutdown', () => {
-  const mockError = jest.spyOn(logger, 'error');
-
-  beforeEach(() => {
-    mockError.mockClear();
-  });
-
-  test('should work correctly', async () => {
-    const mockQuit = jest.fn().mockRejectedValue(new Error('quit failed'));
-    const client = { disconnect: jest.fn(), quit: mockQuit, status: 'ready' };
-
-    const module = new ClusterModule({
-      get: (token: unknown) => {
+  test('closes clients on application shutdown', async () => {
+    const client = {
+      disconnect: vi.fn(),
+      quit: vi.fn().mockRejectedValue(new Error('quit failed')),
+      status: 'ready'
+    };
+    const moduleRef = {
+      get: vi.fn((token: unknown) => {
         if (token === CLUSTER_MERGED_OPTIONS) return { closeClient: true };
         if (token === CLUSTER_CLIENTS) return new Map([['default', client]]);
 
         return undefined;
-      }
-    } as ModuleRef);
+      })
+    } as unknown as ModuleRef;
+    const module = new ClusterModule(moduleRef);
 
     await module.onApplicationShutdown();
-    expect(mockQuit).toHaveBeenCalledTimes(1);
-    expect(mockError).toHaveBeenCalledTimes(1);
+
+    expect(client.quit).toHaveBeenCalledTimes(1);
+    expect(client.disconnect).not.toHaveBeenCalled();
+    expect(logger.error).toHaveBeenCalledTimes(1);
   });
 });

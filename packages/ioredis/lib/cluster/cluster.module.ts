@@ -17,7 +17,7 @@ import { logger } from './cluster-logger.js';
 
 @Module({})
 export class ClusterModule implements OnApplicationShutdown {
-  constructor(private moduleRef: ModuleRef) {}
+  constructor(private readonly moduleRef: ModuleRef) {}
 
   /**
    * Registers the module synchronously.
@@ -74,24 +74,24 @@ export class ClusterModule implements OnApplicationShutdown {
   async onApplicationShutdown(): Promise<void> {
     const { closeClient } = this.moduleRef.get<ClusterModuleOptions>(CLUSTER_MERGED_OPTIONS, { strict: false });
 
-    if (closeClient) {
-      const clients = this.moduleRef.get<ClusterClients>(CLUSTER_CLIENTS, { strict: false });
+    if (!closeClient) return;
 
-      for (const [namespace, client] of clients) {
-        if (client.status === 'end') continue;
+    const clients = this.moduleRef.get<ClusterClients>(CLUSTER_CLIENTS, { strict: false });
 
-        if (client.status === 'ready') {
-          try {
-            await client.quit();
-          } catch (e) {
-            if (isError(e)) logger.error(generateErrorMessage(namespace, e.message), e.stack);
-          }
+    for (const [namespace, client] of clients) {
+      if (client.status === 'end') continue;
 
-          continue;
+      if (client.status === 'ready') {
+        try {
+          await client.quit();
+        } catch (e) {
+          if (isError(e)) logger.error(generateErrorMessage(namespace, e.message), e.stack);
         }
 
-        client.disconnect();
+        continue;
       }
+
+      client.disconnect();
     }
   }
 }

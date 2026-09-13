@@ -1,16 +1,13 @@
-import type { INestApplication } from '@nestjs/common';
-import type { TestingModule } from '@nestjs/testing';
-import type { App } from 'supertest/types';
-
-import { Test } from '@nestjs/testing';
-import * as request from 'supertest';
-
-import { AppModule } from './../src/app.module';
+import { Test, TestingModule } from '@nestjs/testing';
+import { INestApplication } from '@nestjs/common';
+import request from 'supertest';
+import { App } from 'supertest/types';
+import { AppModule } from './../src/app.module.js';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication<App>;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
@@ -19,10 +16,11 @@ describe('AppController (e2e)', () => {
     await app.init();
   });
 
-  afterAll(async () => {
-    if (app) {
-      await app.close();
-    }
+  it('/ (GET)', () => {
+    return request(app.getHttpServer())
+      .get('/')
+      .expect(200)
+      .expect('Hello World!');
   });
 
   it('/hello (GET)', () => {
@@ -30,5 +28,9 @@ describe('AppController (e2e)', () => {
       .get('/hello')
       .expect(200)
       .expect('Hello from Redis!');
+  });
+
+  afterEach(async () => {
+    await app.close();
   });
 });

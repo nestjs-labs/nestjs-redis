@@ -5,7 +5,8 @@
     "outDir": "dist",
     "paths": {
       "@/*": ["./lib/*"]
-    }
+    },
+    "types": ["node", "vitest/globals"]
   },
   "include": ["lib", "test"]
 }

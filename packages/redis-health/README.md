@@ -67,7 +67,7 @@
 
 ### Prerequisites
 
-This lib requires **Node.js >=12.22.0**, **NestJS ^9.0.0**, **ioredis ^5.0.0**.
+This lib requires **Node.js >=24**, **NestJS ^12.0.0**, **@nestjs/terminus ^12.0.0**, and either **ioredis ^5.0.0** or **redis ^5.6.0**.
 
 ### Installation
 

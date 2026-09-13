@@ -18,7 +18,7 @@ import { logger } from './redis-logger.js';
 
 @Module({})
 export class RedisModule implements OnApplicationShutdown {
-  constructor(private moduleRef: ModuleRef) {}
+  constructor(private readonly moduleRef: ModuleRef) {}
 
   /**
    * Registers the module synchronously.
@@ -72,15 +72,17 @@ export class RedisModule implements OnApplicationShutdown {
     };
   }
 
-  async onApplicationShutdown() {
+  async onApplicationShutdown(): Promise<void> {
     const { closeClient } = this.moduleRef.get<RedisModuleOptions>(REDIS_MERGED_OPTIONS, { strict: false });
 
     if (!closeClient) return;
+
     const clients = this.moduleRef.get<RedisClients>(REDIS_CLIENTS, { strict: false });
 
     for (const [namespace, client] of clients) {
       try {
         if (client.status === 'end') continue;
+
         await client.quit();
       } catch (e) {
         if (isError(e)) logger.error(generateErrorMessage(namespace, e.message), e.stack);

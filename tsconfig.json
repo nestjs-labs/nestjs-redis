@@ -7,6 +7,5 @@
       "@/*": ["./lib/*"]
     }
   },
-  "include": ["lib", "test"],
-  "files": ["../global.d.ts"]
+  "include": ["lib", "test"]
 }

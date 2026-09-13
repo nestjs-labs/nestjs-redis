@@ -1,24 +1,32 @@
 import type { TestingModule } from '@nestjs/testing';
 
 import { ABNORMALLY_MEMORY_USAGE, CANNOT_BE_READ, FAILED_CLUSTER_STATE, OPERATIONS_TIMEOUT } from '@health/messages';
+import { TerminusModule } from '@nestjs/terminus';
 import { Test } from '@nestjs/testing';
 import Redis, { Cluster } from 'ioredis';
+import { vi } from 'vitest';
 
 import { RedisHealthIndicator } from './redis.health';
 
-const mockPing = jest.fn();
-const mockInfo = jest.fn();
-const mockClusterInfo = jest.fn();
+const { mockClusterInfo, mockInfo, mockPing } = vi.hoisted(() => ({
+  mockClusterInfo: vi.fn(),
+  mockInfo: vi.fn(),
+  mockPing: vi.fn()
+}));
 
-jest.mock('ioredis', () => ({
-  Cluster: jest.fn(() => ({
-    cluster: mockClusterInfo
-  })),
+vi.mock('ioredis', () => ({
+  Cluster: vi.fn(
+    class {
+      cluster = mockClusterInfo;
+    }
+  ),
   __esModule: true,
-  default: jest.fn(() => ({
-    info: mockInfo,
-    ping: mockPing
-  }))
+  default: vi.fn(
+    class {
+      info = mockInfo;
+      ping = mockPing;
+    }
+  )
 }));
 
 describe('RedisHealthIndicator', () => {
@@ -33,15 +41,18 @@ describe('RedisHealthIndicator', () => {
     redis = new Redis();
     cluster = new Cluster([]);
 
-    const module: TestingModule = await Test.createTestingModule({ providers: [RedisHealthIndicator] }).compile();
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [TerminusModule],
+      providers: [RedisHealthIndicator]
+    }).compile();
 
     indicator = await module.resolve<RedisHealthIndicator>(RedisHealthIndicator);
   });
 
   describe('redis', () => {
     test('the status should be up', async () => {
-      jest.spyOn(redis, 'ping').mockResolvedValue('PONG');
-      jest.spyOn(redis, 'info').mockResolvedValue('# Memory used_memory:100000 used_memory_human:');
+      vi.spyOn(redis, 'ping').mockResolvedValue('PONG');
+      vi.spyOn(redis, 'info').mockResolvedValue('# Memory used_memory:100000 used_memory_human:');
 
       await expect(
         indicator.checkHealth('redis', {
@@ -61,36 +72,42 @@ describe('RedisHealthIndicator', () => {
       ).rejects.toThrow();
     });
 
-    test('should throw an error if ping is rejected', async () => {
+    test('should return a down status if ping is rejected', async () => {
       const message = 'a redis error';
 
-      jest.spyOn(redis, 'ping').mockRejectedValue(new Error(message));
+      vi.spyOn(redis, 'ping').mockRejectedValue(new Error(message));
 
-      await expect(indicator.checkHealth('', { client: redis, type: 'redis' })).rejects.toThrow(message);
+      await expect(indicator.checkHealth('', { client: redis, type: 'redis' })).resolves.toEqual({
+        '': { message, status: 'down' }
+      });
     });
 
-    test('should throw an error if ping timed out', async () => {
-      jest.useFakeTimers();
+    test('should return a down status if ping timed out', async () => {
+      vi.useFakeTimers();
 
       const waitPromise = (ms: number) =>
         new Promise<string>(resolve => {
           setTimeout(() => resolve('PONG'), ms);
         });
 
-      jest.spyOn(redis, 'ping').mockImplementation(() => waitPromise(2000));
+      vi.spyOn(redis, 'ping').mockImplementation(() => waitPromise(2000));
       const promise = indicator.checkHealth('', { client: redis, type: 'redis' });
 
-      jest.runAllTimers();
-      await expect(promise).rejects.toThrow(OPERATIONS_TIMEOUT(1000));
+      vi.runAllTimers();
+      await expect(promise).resolves.toEqual({
+        '': { message: OPERATIONS_TIMEOUT(1000), status: 'down' }
+      });
     });
 
-    test('should throw an error if used memory is greater than threshold', async () => {
-      jest.spyOn(redis, 'ping').mockResolvedValue('PONG');
-      jest.spyOn(redis, 'info').mockResolvedValue('# Memory used_memory:101000 used_memory_human:');
+    test('should return a down status if used memory is greater than threshold', async () => {
+      vi.spyOn(redis, 'ping').mockResolvedValue('PONG');
+      vi.spyOn(redis, 'info').mockResolvedValue('# Memory used_memory:101000 used_memory_human:');
 
       await expect(
         indicator.checkHealth('redis', { client: redis, memoryThreshold: 1000 * 100, type: 'redis' })
-      ).rejects.toThrow(ABNORMALLY_MEMORY_USAGE);
+      ).resolves.toEqual({
+        redis: { message: ABNORMALLY_MEMORY_USAGE, status: 'down' }
+      });
     });
   });
 
@@ -103,26 +120,30 @@ describe('RedisHealthIndicator', () => {
       });
     });
 
-    test('should throw an error', async () => {
+    test('should return a down status if reading cluster info fails', async () => {
       const message = 'a redis error';
 
       mockClusterInfo.mockRejectedValue(new Error(message));
 
-      await expect(indicator.checkHealth('', { client: cluster, type: 'cluster' })).rejects.toThrow(message);
+      await expect(indicator.checkHealth('', { client: cluster, type: 'cluster' })).resolves.toEqual({
+        '': { message, status: 'down' }
+      });
     });
 
-    test('should throw an error if cluster info is null', async () => {
+    test('should return a down status if cluster info is null', async () => {
       mockClusterInfo.mockResolvedValue(null);
 
-      await expect(indicator.checkHealth('', { client: cluster, type: 'cluster' })).rejects.toThrow(CANNOT_BE_READ);
+      await expect(indicator.checkHealth('', { client: cluster, type: 'cluster' })).resolves.toEqual({
+        '': { message: CANNOT_BE_READ, status: 'down' }
+      });
     });
 
-    test('should throw an error if cluster info does not contain "cluster_state:ok"', async () => {
+    test('should return a down status if cluster info does not contain "cluster_state:ok"', async () => {
       mockClusterInfo.mockResolvedValue('cluster_state:fail');
 
-      await expect(indicator.checkHealth('', { client: cluster, type: 'cluster' })).rejects.toThrow(
-        FAILED_CLUSTER_STATE
-      );
+      await expect(indicator.checkHealth('', { client: cluster, type: 'cluster' })).resolves.toEqual({
+        '': { message: FAILED_CLUSTER_STATE, status: 'down' }
+      });
     });
   });
 });

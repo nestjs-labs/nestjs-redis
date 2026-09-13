@@ -5,7 +5,7 @@ describe('MissingConfigurationsError', () => {
     const error = new MissingConfigurationsError();
 
     expect(error.name).toBe(MissingConfigurationsError.name);
-    expect(error.message).toBeString();
+    expect(error.message).toEqual(expect.any(String));
     expect(error.stack).toBeDefined();
   });
 });

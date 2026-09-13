@@ -1,12 +1,15 @@
 import type { RedisClients } from './interfaces/index.js';
 
 import { Test, type TestingModule } from '@nestjs/testing';
-import Redis from 'ioredis';
+import { Redis } from 'ioredis';
+import { vi } from 'vitest';
 
 import { DEFAULT_REDIS, REDIS_CLIENTS } from './redis.constants.js';
 import { RedisService } from './redis.service.js';
 
-jest.mock('ioredis', () => jest.fn(() => ({})));
+vi.mock('ioredis', () => ({
+  Redis: vi.fn(class {})
+}));
 
 describe('RedisService', () => {
   let clients: RedisClients;

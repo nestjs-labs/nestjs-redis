@@ -2,12 +2,13 @@ import type { ClusterClients } from './interfaces/index.js';
 
 import { Test, type TestingModule } from '@nestjs/testing';
 import { Cluster } from 'ioredis';
+import { vi } from 'vitest';
 
 import { CLUSTER_CLIENTS, DEFAULT_CLUSTER } from './cluster.constants.js';
 import { ClusterService } from './cluster.service.js';
 
-jest.mock('ioredis', () => ({
-  Cluster: jest.fn(() => ({}))
+vi.mock('ioredis', () => ({
+  Cluster: vi.fn(class {})
 }));
 
 describe('ClusterService', () => {

@@ -27,6 +27,6 @@ describe('InjectController (e2e)', () => {
     const res = await app.inject({ method: 'GET', url: '/inject' });
 
     expect(res.statusCode).toBe(200);
-    expect(JSON.parse(res.payload)).toIncludeSameMembers(['PONG', 'PONG']);
+    expect(JSON.parse(res.payload)).toEqual(['PONG', 'PONG']);
   });
 });

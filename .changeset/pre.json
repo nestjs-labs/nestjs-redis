@@ -1,0 +1,11 @@
+{
+  "mode": "pre",
+  "tag": "alpha",
+  "initialVersions": {
+    "nest-redis-example": "0.0.1",
+    "@nestjs-labs/nestjs-ioredis": "11.0.4",
+    "@nestjs-labs/nestjs-redis": "11.0.4",
+    "@nestjs-labs/nestjs-redis-health": "11.0.1"
+  },
+  "changesets": ["slick-candles-kneel"]
+}

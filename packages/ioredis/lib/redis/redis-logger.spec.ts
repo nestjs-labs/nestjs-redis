@@ -1,9 +1,10 @@
 import { Logger } from '@nestjs/common';
+import { vi } from 'vitest';
 
 import { logger } from './redis-logger.js';
 
-jest.mock('@nestjs/common', () => ({
-  Logger: jest.fn()
+vi.mock('@nestjs/common', () => ({
+  Logger: vi.fn()
 }));
 
 describe('logger', () => {

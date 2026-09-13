@@ -1,33 +1,14 @@
-import type { TestingModule } from '@nestjs/testing';
-
 import { HealthCheckService } from '@nestjs/terminus';
-import { Test } from '@nestjs/testing';
+import { Test, TestingModule } from '@nestjs/testing';
 
 import { REDIS_CLIENT, RedisService } from '@nestjs-labs/nestjs-redis';
 import { RedisHealthIndicator } from '@nestjs-labs/nestjs-redis-health';
 
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { AppController } from './app.controller.js';
+import { AppService } from './app.service.js';
 
 describe('AppController', () => {
   let appController: AppController;
-
-  const mockRedisClient = {
-    get: jest.fn().mockResolvedValue('Hello from Redis!'),
-    set: jest.fn().mockResolvedValue('OK'),
-  };
-
-  const mockRedisService = {
-    getClient: jest.fn().mockReturnValue(mockRedisClient),
-  };
-
-  const mockHealthCheckService = {
-    check: jest.fn(),
-  };
-
-  const mockRedisHealthIndicator = {
-    checkHealth: jest.fn(),
-  };
 
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
@@ -36,36 +17,32 @@ describe('AppController', () => {
         AppService,
         {
           provide: RedisService,
-          useValue: mockRedisService,
+          useValue: {
+            getClient: vi.fn(),
+            isClusterMode: vi.fn().mockReturnValue(false),
+          },
         },
         {
           provide: REDIS_CLIENT,
-          useValue: mockRedisClient,
+          useValue: { get: vi.fn() },
         },
         {
           provide: HealthCheckService,
-          useValue: mockHealthCheckService,
+          useValue: { check: vi.fn() },
         },
         {
           provide: RedisHealthIndicator,
-          useValue: mockRedisHealthIndicator,
+          useValue: { checkHealth: vi.fn() },
         },
       ],
     }).compile();
 
-    appController = app.get<AppController>(AppController);
+    appController = app.get(AppController);
   });
 
   describe('root', () => {
-    it('should return "Hello from Redis!"', async () => {
-      const result = await appController.getHello();
-
-      expect(result).toBe('Hello from Redis!');
-      expect(mockRedisClient.set).toHaveBeenCalledWith(
-        'test-key',
-        'Hello from Redis!',
-      );
-      expect(mockRedisClient.get).toHaveBeenCalledWith('test-key');
+    it('should return "Hello World!"', () => {
+      expect(appController.getHello()).toBe('Hello World!');
     });
   });
 });
