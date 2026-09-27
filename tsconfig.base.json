@@ -1,12 +1,13 @@
 {
   "compilerOptions": {
-    "module": "CommonJS",
-    "moduleResolution": "node",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "resolvePackageJsonExports": true,
     "declaration": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "target": "ES2021",
-    "lib": ["ES2021"],
+    "target": "ES2023",
+    "lib": ["ES2023"],
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "importHelpers": true,
