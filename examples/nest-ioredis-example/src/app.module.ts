@@ -9,6 +9,7 @@ import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
 
 @Module({
+  controllers: [AppController],
   imports: [
     ConfigModule.forRoot(),
     TerminusModule,
@@ -20,7 +21,6 @@ import { AppService } from './app.service.js';
       },
     }),
   ],
-  controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}
