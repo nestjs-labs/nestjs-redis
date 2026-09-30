@@ -14,18 +14,14 @@ jobs:
   release:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+      - name: Setup pnpm and Node.js
+        uses: pnpm/setup@v1
         with:
-          version: 11.0.8
-      - name: Setup node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 24
-          registry-url: 'https://registry.npmjs.org'
+          runtime: node@24
+          cache: true
       - name: Detect workspace changes
         id: changes
         uses: dorny/paths-filter@v4
@@ -39,7 +35,6 @@ jobs:
               - 'packages/redis-health/**'
             example:
               - 'examples/nest-redis-example/**'
-      - run: pnpm install --frozen-lockfile
       - name: Lint node-redis
         if: steps.changes.outputs.node_redis == 'true'
         run: pnpm -F "@nestjs-labs/nestjs-redis" run lint
@@ -76,5 +71,4 @@ jobs:
           publish: pnpm release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-          PNPM_CONFIG_NPMRC_AUTH_FILE: ${{ env.NPM_CONFIG_USERCONFIG }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

@@ -11,7 +11,7 @@ jobs:
     name: Node.js 24
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - name: Detect workspace changes
@@ -32,17 +32,12 @@ jobs:
               - 'packages/redis-health/**'
             example:
               - 'examples/nest-redis-example/**'
-      - name: Setup pnpm
+      - name: Setup pnpm and Node.js
         if: steps.changes.outputs.any_workspace == 'true'
-        uses: pnpm/action-setup@v4
+        uses: pnpm/setup@v1
         with:
-          version: 11.0.8
-      - name: Setup node
-        if: steps.changes.outputs.any_workspace == 'true'
-        uses: actions/setup-node@v4
-        with:
-          node-version: 24
-          cache: 'pnpm'
+          runtime: node@24
+          cache: true
       - name: Cache Docker images
         if: steps.changes.outputs.any_workspace == 'true'
         uses: ScribeMD/docker-cache@0.5.0
@@ -56,9 +51,6 @@ jobs:
           compose-flags: '--profile standalone --profile cluster'
           up-flags: '-d'
           down-flags: '-v'
-      - name: Install dependencies
-        if: steps.changes.outputs.any_workspace == 'true'
-        run: pnpm install --frozen-lockfile
       - name: Lint node-redis
         if: steps.changes.outputs.node_redis == 'true'
         run: pnpm -F "@nestjs-labs/nestjs-redis" run lint
