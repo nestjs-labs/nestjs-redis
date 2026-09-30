@@ -43,6 +43,20 @@ describe('RedisModule', () => {
     expect(module.exports).toEqual([expect.any(Function)]);
   });
 
+  test('accepts a factory with typed injected dependencies', () => {
+    const url = 'redis://localhost:6379';
+    const options: RedisModuleAsyncOptions = {
+      inject: ['redis-url'],
+      useFactory: (redisUrl: string) => ({ config: { url: redisUrl } })
+    };
+    const module = RedisModule.forRootAsync(options);
+
+    expect(module.providers).toContainEqual(
+      expect.objectContaining({ inject: options.inject, useFactory: options.useFactory })
+    );
+    expect(options.useFactory?.(url)).toEqual({ config: { url } });
+  });
+
   test('rejects an asynchronous registration without a factory', () => {
     expect(() => RedisModule.forRootAsync({})).toThrow();
   });
