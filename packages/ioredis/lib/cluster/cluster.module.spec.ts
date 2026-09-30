@@ -39,6 +39,20 @@ describe('ClusterModule', () => {
     expect(module.exports).toEqual([expect.any(Function)]);
   });
 
+  test('accepts an async factory with typed injected dependencies', async () => {
+    const nodes = [{ host: 'localhost', port: 16379 }];
+    const options: ClusterModuleAsyncOptions = {
+      inject: ['cluster-nodes'],
+      useFactory: (clusterNodes: typeof nodes) => Promise.resolve({ config: { nodes: clusterNodes } })
+    };
+    const module = ClusterModule.forRootAsync(options);
+
+    expect(module.providers).toContainEqual(
+      expect.objectContaining({ inject: options.inject, useFactory: options.useFactory })
+    );
+    await expect(options.useFactory?.(nodes)).resolves.toEqual({ config: { nodes } });
+  });
+
   test('rejects an asynchronous registration without a factory', () => {
     expect(() => ClusterModule.forRootAsync({})).toThrow();
   });

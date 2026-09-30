@@ -1,5 +1,12 @@
 import type { Namespace } from '@/interfaces';
-import type { InjectionToken, ModuleMetadata, OptionalFactoryDependency, Provider, Type } from '@nestjs/common';
+import type {
+  FactoryProvider,
+  InjectionToken,
+  ModuleMetadata,
+  OptionalFactoryDependency,
+  Provider,
+  Type
+} from '@nestjs/common';
 import type { Cluster, ClusterNode, ClusterOptions } from 'ioredis';
 
 export interface ClusterClientOptions extends ClusterOptions {
@@ -76,7 +83,7 @@ export interface ClusterModuleOptions {
 }
 
 export interface ClusterModuleAsyncOptions extends Pick<ModuleMetadata, 'imports'> {
-  useFactory?: (...args: unknown[]) => ClusterModuleOptions | Promise<ClusterModuleOptions>;
+  useFactory?: FactoryProvider<ClusterModuleOptions>['useFactory'];
   useClass?: Type<ClusterOptionsFactory>;
   useExisting?: Type<ClusterOptionsFactory>;
   inject?: (InjectionToken | OptionalFactoryDependency)[];
