@@ -86,6 +86,91 @@ importers:
         specifier: ^4.1.2
         version: 4.1.11(@types/node@24.13.4)(@vitest/coverage-v8@4.1.11)(vite@7.3.6(@types/node@24.13.4)(jiti@2.6.1)(yaml@2.9.0))
 
+  examples/nest-ioredis-example:
+    dependencies:
+      '@nestjs-labs/nestjs-ioredis':
+        specifier: workspace:^
+        version: link:../../packages/ioredis
+      '@nestjs-labs/nestjs-redis-health':
+        specifier: workspace:^
+        version: link:../../packages/redis-health
+      '@nestjs/common':
+        specifier: ^12.0.1
+        version: 12.0.1(reflect-metadata@0.2.2)(rxjs@7.8.1)
+      '@nestjs/config':
+        specifier: ^12.0.0
+        version: 12.0.0(@nestjs/common@12.0.1(reflect-metadata@0.2.2)(rxjs@7.8.1))(rxjs@7.8.1)
+      '@nestjs/core':
+        specifier: ^12.0.1
+        version: 12.0.1(@nestjs/common@12.0.1(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/platform-express@12.0.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
+      '@nestjs/platform-express':
+        specifier: ^12.0.1
+        version: 12.0.1(@nestjs/common@12.0.1(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@12.0.1)
+      '@nestjs/terminus':
+        specifier: ^12.0.0
+        version: 12.0.0(@nestjs/common@12.0.1(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@12.0.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
+      ioredis:
+        specifier: ^5.0.0
+        version: 5.11.1
+      reflect-metadata:
+        specifier: ^0.2.2
+        version: 0.2.2
+      rxjs:
+        specifier: ^7.8.1
+        version: 7.8.1
+    devDependencies:
+      '@nestjs/cli':
+        specifier: ^12.0.0
+        version: 12.0.0(@swc/core@1.16.2)(@types/node@24.13.4)(prettier@3.4.2)
+      '@nestjs/mau':
+        specifier: ^0.2.6
+        version: 0.2.6
+      '@nestjs/schematics':
+        specifier: ^12.0.0
+        version: 12.0.0(chokidar@5.0.0)(prettier@3.4.2)(typescript@6.0.3)
+      '@nestjs/testing':
+        specifier: ^12.0.1
+        version: 12.0.1(@nestjs/common@12.0.1(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@12.0.1)(@nestjs/platform-express@12.0.1)
+      '@swc/core':
+        specifier: ^1.16.2
+        version: 1.16.2
+      '@types/express':
+        specifier: ^5.0.0
+        version: 5.0.6
+      '@types/node':
+        specifier: 24.13.4
+        version: 24.13.4
+      '@types/supertest':
+        specifier: ^7.0.0
+        version: 7.2.1
+      '@vitest/coverage-v8':
+        specifier: ^4.1.2
+        version: 4.1.11(vitest@4.1.11)
+      oxlint:
+        specifier: ^1.58.0
+        version: 1.82.0
+      prettier:
+        specifier: ^3.4.2
+        version: 3.4.2
+      source-map-support:
+        specifier: ^0.5.21
+        version: 0.5.21
+      supertest:
+        specifier: ^7.0.0
+        version: 7.2.2
+      typescript:
+        specifier: ^6.0.2
+        version: 6.0.3
+      unplugin-swc:
+        specifier: ^1.6.0
+        version: 1.6.0(@swc/core@1.16.2)(esbuild@0.28.2)(rollup@4.63.1)(vite@7.3.6(@types/node@24.13.4)(jiti@2.6.1)(yaml@2.9.0))
+      vite-tsconfig-paths:
+        specifier: ^5.1.4
+        version: 5.1.4(typescript@6.0.3)(vite@7.3.6(@types/node@24.13.4)(jiti@2.6.1)(yaml@2.9.0))
+      vitest:
+        specifier: ^4.1.2
+        version: 4.1.11(@types/node@24.13.4)(@vitest/coverage-v8@4.1.11)(vite@7.3.6(@types/node@24.13.4)(jiti@2.6.1)(yaml@2.9.0))
+
   examples/nest-redis-example:
     dependencies:
       '@nestjs-labs/nestjs-redis':

@@ -235,6 +235,8 @@ export class AppModule {}
   - [Auto-reconnect](https://luin.github.io/ioredis/interfaces/ClusterOptions.html#clusterRetryStrategy)
 - [Health Checks](/packages/redis-health/README.md)
 - [Examples](/docs/latest/examples.md)
+  - [NestJS ioredis example](/examples/nest-ioredis-example)
+  - [NestJS redis example](/examples/nest-redis-example)
   - [Redis Sentinel](/docs/latest/examples.md#sentinel)
 
 ### Legacy
