@@ -35,6 +35,10 @@ jobs:
               - 'packages/redis-health/**'
             example:
               - 'examples/nest-redis-example/**'
+            ioredis_example:
+              - 'examples/nest-ioredis-example/**'
+              - 'packages/ioredis/**'
+              - 'packages/redis-health/**'
       - name: Lint node-redis
         if: steps.changes.outputs.node_redis == 'true'
         run: pnpm -F "@nestjs-labs/nestjs-redis" run lint
@@ -64,6 +68,17 @@ jobs:
       - name: Build example
         if: steps.changes.outputs.example == 'true'
         run: pnpm -F "nest-redis-example" run build
+      - name: Build ioredis example dependencies
+        if: steps.changes.outputs.ioredis_example == 'true'
+        run: |
+          pnpm -F "@nestjs-labs/nestjs-ioredis" run build
+          pnpm -F "@nestjs-labs/nestjs-redis-health" run build
+      - name: Lint ioredis example
+        if: steps.changes.outputs.ioredis_example == 'true'
+        run: pnpm -F "nest-ioredis-example" run lint
+      - name: Build ioredis example
+        if: steps.changes.outputs.ioredis_example == 'true'
+        run: pnpm -F "nest-ioredis-example" run build
       - name: Create release pull request or publish
         uses: changesets/action@v1
         with:
