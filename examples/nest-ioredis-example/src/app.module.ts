@@ -15,10 +15,8 @@ import { AppService } from './app.service.js';
     RedisHealthModule,
     RedisModule.forRoot({
       config: {
-        host: process.env.REDIS_HOST ?? 'localhost',
-        port: Number(process.env.REDIS_PORT ?? 6379),
-        password: process.env.REDIS_PASSWORD,
-        db: Number(process.env.REDIS_DB ?? 0),
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        url: process.env.REDIS_URL!,
       },
     }),
   ],
